@@ -20,7 +20,7 @@ buildscript {
 
 apply plugin: 'forge' // adds the forge dependency
 apply plugin: 'maven' // for uploading to a maven repo
-apply plugin: 'checkstyle'
+//apply plugin: 'checkstyle'
 
 version = "7.1.22"
 group= "com.mod-buildcraft"
@@ -123,15 +123,15 @@ task sourceJar(type: Jar) {
 }
 
 // add api classes to javadoc
-javadoc {
-    source += sourceSets.api.allSource
-}
+//javadoc {
+//    source += sourceSets.api.allSource
+//}
 
 // add a javadoc jar
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from 'build/docs/javadoc'
-}
+//task javadocJar(type: Jar, dependsOn: javadoc) {
+//    classifier = 'javadoc'
+//    from 'build/docs/javadoc'
+//}
 
 // because the normal output has been made to be obfuscated
 task deobfJar(type: Jar) {
@@ -242,14 +242,14 @@ jar {
 	from sourceSets.api.output
 }
 
-checkstyle {
-	configFile = file('guidelines/buildcraft.checkstyle')
-}
+//checkstyle {
+//	configFile = file('guidelines/buildcraft.checkstyle')
+//}
 
-checkstyleApi.exclude 'cofh/**'
+//checkstyleApi.exclude 'cofh/**'
 
 // make sure all of these happen when we run build
-build.dependsOn sourceJar, javadocJar, deobfJar, apiJar
+build.dependsOn sourceJar, deobfJar, apiJar // javadocJar, 
 
 // --------------------
 // maven section
@@ -275,7 +275,7 @@ clean{
 artifacts {
     // the default jar is already here by default
     archives sourceJar
-    archives javadocJar
+    //archives javadocJar
     archives deobfJar
     archives apiJar
 

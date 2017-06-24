@@ -338,9 +338,10 @@ public class BuildCraftCore extends BuildCraftMod {
 
 		if (BuildCraftCore.modifyWorld) {
 			BlockSpring.EnumSpring.WATER.canGen = BuildCraftCore.mainConfigManager.get("worldgen.generateWaterSprings").getBoolean();
-			springBlock = new BlockSpring().setBlockName("eternalSpring");
-			BCRegistry.INSTANCE.registerBlock(springBlock, ItemSpring.class, false);
 		}
+
+		springBlock = new BlockSpring().setBlockName("eternalSpring");
+		BCRegistry.INSTANCE.registerBlock(springBlock, ItemSpring.class, false);
 
 		woodenGearItem = (new ItemGear()).setUnlocalizedName("woodenGearItem");
 		if (BCRegistry.INSTANCE.registerItem(woodenGearItem, false)) {
@@ -675,10 +676,10 @@ public class BuildCraftCore extends BuildCraftMod {
 		BCRegistry.INSTANCE.addCraftingRecipe(new ItemStack(stoneGearItem), " I ", "IGI",
 				" I ", 'I',
 				"cobblestone", 'G',
-				"gearWood");
+				"gearProven");
 		BCRegistry.INSTANCE.addCraftingRecipe(new ItemStack(ironGearItem), " I ", "IGI",
 				" I ", 'I',
-				"ingotIron", 'G', "gearStone");
+				"ingotIron", 'G', "gearCopper");
 		BCRegistry.INSTANCE.addCraftingRecipe(new ItemStack(goldGearItem), " I ", "IGI",
 				" I ", 'I',
 				"ingotGold", 'G', "gearIron");

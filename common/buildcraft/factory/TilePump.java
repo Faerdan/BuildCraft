@@ -14,6 +14,8 @@ import java.util.LinkedList;
 import java.util.Set;
 import java.util.TreeMap;
 
+import buildcraft.api.core.BCLog;
+import buildcraft.core.BlockSpring;
 import io.netty.buffer.ByteBuf;
 
 import net.minecraft.block.Block;
@@ -118,18 +120,35 @@ public class TilePump extends TileBuildCraft implements IHasWork, IFluidHandler,
 
 		FluidStack fluidToPump = index != null ? BlockUtils.drainBlock(worldObj, index.x, index.y, index.z, false) : null;
 		if (fluidToPump != null) {
+			//BCLog.logger.info("TilePump: Found fluid " + fluidToPump.getFluid().getName() + " at " + index.x + ", " + index.y + ", " + index.z + ".");
 			if (isFluidAllowed(fluidToPump.getFluid()) && tank.fill(fluidToPump, false) == fluidToPump.amount) {
 				if (getBattery().useEnergy(100, 100, false) > 0) {
-					if (fluidToPump.getFluid() != FluidRegistry.WATER || BuildCraftCore.consumeWaterSources || numFluidBlocksFound < 9) {
+					if (fluidToPump.getFluid() == FluidRegistry.getFluid("oil"))
+					{
+						//BCLog.logger.info("TilePump: Found oil at " + index.x + ", " + index.y + ", " + index.z + ".");
+						Block nextBlock = worldObj.getBlock(index.x, index.y - 1, index.z);
+						if (nextBlock instanceof BlockSpring)
+						{
+							//BCLog.logger.info("TilePump: Found BlockSpring at " + index.x + ", " + (index.y - 1) + ", " + index.z + ".");
+							fluidToPump.amount *= 0.05;
+						}
+						else
+						{
+							//BCLog.logger.info("TilePump: No BlockSpring found at " + index.x + ", " + (index.y - 1) + ", " + index.z + ", it's a " + nextBlock.getUnlocalizedName());
+							fluidToPump = null;
+							getNextIndexToPump(true);
+						}
+					}
+					else if (fluidToPump.getFluid() != FluidRegistry.WATER || BuildCraftCore.consumeWaterSources || numFluidBlocksFound < 9) {
 						index = getNextIndexToPump(true);
 						BlockUtils.drainBlock(worldObj, index.x, index.y, index.z, true);
 					}
-
 					tank.fill(fluidToPump, true);
 					tickPumped = tick;
 				}
 			}
 		} else {
+
 			if (tick % 128 == 0) {
 				// TODO: improve that decision
 				rebuildQueue();
