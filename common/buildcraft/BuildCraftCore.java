@@ -676,7 +676,7 @@ public class BuildCraftCore extends BuildCraftMod {
 		BCRegistry.INSTANCE.addCraftingRecipe(new ItemStack(stoneGearItem), " I ", "IGI",
 				" I ", 'I',
 				"cobblestone", 'G',
-				"gearProven");
+				"gearWood");
 		BCRegistry.INSTANCE.addCraftingRecipe(new ItemStack(ironGearItem), " I ", "IGI",
 				" I ", 'I',
 				"ingotIron", 'G', "gearCopper");
