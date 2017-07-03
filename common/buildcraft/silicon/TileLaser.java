@@ -11,6 +11,7 @@ package buildcraft.silicon;
 import java.util.LinkedList;
 import java.util.List;
 
+import Reika.RotaryCraft.API.Power.ShaftPowerInputManager;
 import io.netty.buffer.ByteBuf;
 
 import net.minecraft.nbt.NBTTagCompound;
@@ -51,7 +52,8 @@ public class TileLaser extends TileBuildCraft implements IHasWork, IControllable
 
 	public TileLaser() {
 		super();
-		this.setBattery(new RFBattery(10000, 250, 0));
+		//this.setBattery(new RFBattery(10000, 250, 0));
+		this.setBattery(new ShaftPowerInputManager("laser", 1, 16384, 16384));
 	}
 
 	@Override
@@ -97,7 +99,7 @@ public class TileLaser extends TileBuildCraft implements IHasWork, IControllable
 		}
 
 		// Disable the laser and do nothing if no energy is available.
-		if (getBattery().getEnergyStored() == 0) {
+		if (!getBattery().isStagePowered(0)) {
 			removeLaser();
 			return;
 		}
@@ -115,7 +117,7 @@ public class TileLaser extends TileBuildCraft implements IHasWork, IControllable
 		}
 
 		// Consume power and transfer it to the table.
-		int localPower = getBattery().useEnergy(0, getMaxPowerSent(), false);
+		int localPower = (int)(40 * ((float)getBattery().getPower() / 262144F));//getBattery().useEnergy(0, getMaxPowerSent(), false);
 		laserTarget.receiveLaserEnergy(localPower);
 
 		if (laser != null) {

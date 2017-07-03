@@ -120,4 +120,9 @@ public class TileEngineCreative extends TileEngineBase {
 	public int getIdealOutput() {
 		return powerMode.maxPower;
 	}
+
+	@Override
+	public int receiveEnergy(ForgeDirection from, int maxReceive, boolean simulate) {
+		return 0;
+	}
 }

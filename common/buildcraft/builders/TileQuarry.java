@@ -12,6 +12,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import Reika.RotaryCraft.API.Power.PowerStage;
+import Reika.RotaryCraft.API.Power.ShaftPowerInputManager;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import io.netty.buffer.ByteBuf;
@@ -104,7 +106,7 @@ public class TileQuarry extends TileAbstractBuilder implements IHasWork, ISidedI
 
 	public TileQuarry() {
 		box.kind = Kind.STRIPES;
-		this.setBattery(new RFBattery((int) (2 * 64 * BuilderAPI.BREAK_ENERGY * BuildCraftCore.miningMultiplier), (int) (1000 * BuildCraftCore.miningMultiplier), 0));
+		this.setBattery(new ShaftPowerInputManager("quarry", new PowerStage[] { new PowerStage(256, 1, 262144), new PowerStage(1, 4096, 131072)}));
 	}
 
 	public void createUtilsIfNeeded() {
@@ -209,11 +211,15 @@ public class TileQuarry extends TileAbstractBuilder implements IHasWork, ISidedI
 			// In this case, since idling() does it anyway, we should return.
 			return;
 		} else if (stage == Stage.MOVING) {
-			int energyUsed = this.getBattery().useEnergy(20, (int) Math.ceil(20D + (double) getBattery().getEnergyStored() / 10), false);
+			//int energyUsed = this.getBattery().useEnergy(20, (int) Math.ceil(20D + (double) getBattery().getEnergyStored() / 10), false);
 
-			if (energyUsed >= 20) {
+			if (getBattery().isStagePowered(1))
+			{
+			//if (energyUsed >= 20) {
 
-				speed = 0.1 + energyUsed / 2000F;
+				//speed = 0.1 + energyUsed / 2000F;
+
+				speed = 0.1 + Math.min(0.9, (double)(getOmega() - getBattery().getMinOmega(1)) / (double)getBattery().getMinOmega(1));
 
 				// If it's raining or snowing above the head, slow down.
 				if (worldObj.isRaining()) {
@@ -247,8 +253,7 @@ public class TileQuarry extends TileAbstractBuilder implements IHasWork, ISidedI
 			return;
 		}
 
-		int rfTaken = miner.acceptEnergy(getBattery().getEnergyStored());
-		getBattery().useEnergy(rfTaken, rfTaken, false);
+		miner.acceptEnergy(getBattery().getTorque());
 
 		if (miner.hasMined()) {
 			// Collect any lost items laying around.
@@ -655,7 +660,8 @@ public class TileQuarry extends TileAbstractBuilder implements IHasWork, ISidedI
 		flags |= movingVertically ? 0x20 : 0;
 		stream.writeByte(flags);
 
-		ledState = (hasWork() && mode != Mode.Off && getTicksSinceEnergyReceived() < 12 ? 16 : 0) | (getBattery().getEnergyStored() * 15 / getBattery().getMaxEnergyStored());
+		ledState = (hasWork() && mode != Mode.Off && getBattery().isStagePowered(0)) ? 16 : 0;
+		//ledState = (hasWork() && mode != Mode.Off && getTicksSinceEnergyReceived() < 12 ? 16 : 0) | (getBattery().getEnergyStored() * 15 / getBattery().getMaxEnergyStored());
 		stream.writeByte(ledState);
 	}
 

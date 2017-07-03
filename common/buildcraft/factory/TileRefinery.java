@@ -8,6 +8,7 @@
  */
 package buildcraft.factory;
 
+import Reika.RotaryCraft.API.Power.ShaftPowerInputManager;
 import io.netty.buffer.ByteBuf;
 
 import net.minecraft.inventory.Container;
@@ -30,7 +31,6 @@ import buildcraft.api.recipes.CraftingResult;
 import buildcraft.api.recipes.IFlexibleCrafter;
 import buildcraft.api.recipes.IFlexibleRecipe;
 import buildcraft.api.tiles.IHasWork;
-import buildcraft.core.lib.RFBattery;
 import buildcraft.core.lib.block.TileBuildCraft;
 import buildcraft.core.lib.fluids.SingleUseTank;
 import buildcraft.core.lib.fluids.TankManager;
@@ -44,6 +44,8 @@ public class TileRefinery extends TileBuildCraft implements IFluidHandler, IHasW
 
 	public IFlexibleRecipe<FluidStack> currentRecipe;
 	public CraftingResult<FluidStack> craftingResult;
+
+	private float currentRecipeProgressTicks;
 
 	public SingleUseTank[] tanks = {new SingleUseTank("tank1", LIQUID_PER_SLOT, this),
 			new SingleUseTank("tank2", LIQUID_PER_SLOT, this)};
@@ -61,7 +63,7 @@ public class TileRefinery extends TileBuildCraft implements IFluidHandler, IHasW
 
 	public TileRefinery() {
 		super();
-		this.setBattery(new RFBattery(10000, 1500, 0));
+		this.setBattery(new ShaftPowerInputManager("refinery", 1, 16384, 16384));
 	}
 
 	@Override
@@ -91,20 +93,21 @@ public class TileRefinery extends TileBuildCraft implements IFluidHandler, IHasW
 
 		isActive = true;
 
-		if (getBattery().getEnergyStored() >= craftingResult.energyCost) {
+		if (getBattery().isStagePowered(0)) {
 			increaseAnimation();
 		} else {
 			decreaseAnimation();
 		}
 
-		if (!time.markTimeIfDelay(worldObj, craftingResult.craftingTime)) {
+		/*if (!time.markTimeIfDelay(worldObj, craftingResult.craftingTime)) {
 			return;
-		}
+		}*/
 
-		if (getBattery().useEnergy(craftingResult.energyCost, craftingResult.energyCost, true) > 0) {
+		currentRecipeProgressTicks += 4F + (8F * Math.min(1, (double)(getOmega() - getBattery().getMinOmega(0)) / (double)getBattery().getMinOmega(0)));
+
+		if (currentRecipeProgressTicks >= craftingResult.energyCost) {
 			CraftingResult<FluidStack> r = currentRecipe.craft(this, true);
 			if (r != null && r.crafted != null) {
-				getBattery().useEnergy(craftingResult.energyCost, craftingResult.energyCost, false);
 				r = currentRecipe.craft(this, false);
 				if (r != null && r.crafted != null) {
 					// Shouldn't really happen, but its not properly documented
@@ -262,6 +265,10 @@ public class TileRefinery extends TileBuildCraft implements IFluidHandler, IHasW
 
 			if (craftingResult != null) {
 				currentRecipe = recipe;
+				if (currentRecipe.getId() != currentRecipeId)
+				{
+					currentRecipeProgressTicks = 0;
+				}
 				currentRecipeId = currentRecipe.getId();
 				break;
 			}

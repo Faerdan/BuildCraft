@@ -8,6 +8,7 @@
  */
 package buildcraft.factory;
 
+import Reika.RotaryCraft.API.Power.ShaftPowerInputManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -26,14 +27,15 @@ import buildcraft.core.lib.inventory.ITransactor;
 import buildcraft.core.lib.inventory.SimpleInventory;
 import buildcraft.core.lib.inventory.Transactor;
 
-public class TileHopper extends TileBuildCraft implements IInventory, IEnergyHandler, IRedstoneEngineReceiver {
+public class TileHopper extends TileBuildCraft implements IInventory {
 
 	private final SimpleInventory inventory = new SimpleInventory(4, "Hopper", 64);
 	private boolean isEmpty;
 
 	@Override
 	public void initialize() {
-		this.setBattery(new RFBattery(10, 10, 0));
+		//this.setBattery(new RFBattery(10, 10, 0));
+		this.setBattery(new ShaftPowerInputManager("hopper", 256));
 		inventory.addListener(this);
 	}
 
@@ -72,11 +74,9 @@ public class TileHopper extends TileBuildCraft implements IInventory, IEnergyHan
 		ITransactor transactor = Transactor.getTransactorFor(outputTile);
 
 		if (transactor == null) {
-			if (outputTile instanceof IInjectable && getBattery().getEnergyStored() >= 10) {
+			if (outputTile instanceof IInjectable && getBattery().isStagePowered(0)) {
 				ItemStack stackToOutput = null;
 				int internalSlot = 0;
-
-				getBattery().useEnergy(10, 10, false);
 
 				for (; internalSlot < inventory.getSizeInventory(); internalSlot++) {
 					ItemStack stackInSlot = inventory.getStackInSlot(internalSlot);
@@ -191,19 +191,13 @@ public class TileHopper extends TileBuildCraft implements IInventory, IEnergyHan
 	}
 
 	@Override
-	public boolean canConnectRedstoneEngine(ForgeDirection side) {
-		// blocks up and down
-		return side.ordinal() >= 2;
-	}
-
-	@Override
 	public String getOwner() {
 		return super.getOwner();
 	}
 
-	@Override
+	/*@Override
 	public boolean canConnectEnergy(ForgeDirection side) {
 		// blocks up and down
 		return side.ordinal() >= 2 && !(getTile(side) instanceof IPipeTile);
-	}
+	}*/
 }

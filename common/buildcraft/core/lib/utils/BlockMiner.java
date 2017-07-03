@@ -2,6 +2,7 @@ package buildcraft.core.lib.utils;
 
 import java.util.List;
 
+import buildcraft.api.core.BCLog;
 import net.minecraft.block.Block;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
@@ -80,6 +81,8 @@ public class BlockMiner {
 		}
 
 		energyRequired = BlockUtils.computeBlockBreakEnergy(world, x, y, z);
+
+		BCLog.logger.info("quarry energyRequired: " + energyRequired + ", provided: " + offeredAmount);
 
 		int usedAmount = MathUtils.clamp(offeredAmount, 0, Math.max(0, energyRequired - energyAccepted));
 		energyAccepted += usedAmount;

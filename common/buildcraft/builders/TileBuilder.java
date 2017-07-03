@@ -69,8 +69,6 @@ import buildcraft.core.lib.utils.NetworkUtils;
 
 public class TileBuilder extends TileAbstractBuilder implements IHasWork, IFluidHandler, IRequestProvider, IControllable {
 
-	private static int POWER_ACTIVATION = 500;
-
 	public Box box = new Box();
 	public PathIterator currentPathIterator;
 	public Tank[] fluidTanks = new Tank[]{
@@ -592,7 +590,7 @@ public class TileBuilder extends TileAbstractBuilder implements IHasWork, IFluid
 
 		if (mode != Mode.Off) {
 			if (getWorldObj().getWorldInfo().getGameType() == GameType.CREATIVE
-					|| getBattery().getEnergyStored() > POWER_ACTIVATION) {
+					|| getBattery().isStagePowered(0)) {
 				build();
 			}
 		}
@@ -601,12 +599,6 @@ public class TileBuilder extends TileAbstractBuilder implements IHasWork, IFluid
 			scheduleRequirementUpdate();
 		}
 		isBuilding = this.isBuildingBlueprint();
-
-		if (done) {
-			return;
-		} else if (getBattery().getEnergyStored() < 25) {
-			return;
-		}
 	}
 
 	@Override

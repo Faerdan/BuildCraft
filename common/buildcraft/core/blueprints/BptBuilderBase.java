@@ -198,11 +198,12 @@ public abstract class BptBuilderBase implements IAreaProvider {
 	}
 
 	protected final boolean canDestroy(TileAbstractBuilder builder, IBuilderContext context, BuildingSlotBlock slot) {
-		return builder.energyAvailable() >= getBlockBreakEnergy(slot);
+		return builder.getBattery().isStagePowered(0);//builder.energyAvailable() >= getBlockBreakEnergy(slot);
 	}
 
 	public void consumeEnergyToDestroy(TileAbstractBuilder builder, BuildingSlotBlock slot) {
-		builder.consumeEnergy(getBlockBreakEnergy(slot));
+		// @ToDo: Update builder to use rotary power in a more dynamic way
+		//builder.consumeEnergy(getBlockBreakEnergy(slot));
 	}
 
 	public void createDestroyItems(BuildingSlotBlock slot) {

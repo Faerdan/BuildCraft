@@ -14,6 +14,7 @@ import java.util.LinkedList;
 import java.util.Set;
 import java.util.TreeMap;
 
+import Reika.RotaryCraft.API.Power.ShaftPowerInputManager;
 import buildcraft.api.core.BCLog;
 import buildcraft.core.BlockSpring;
 import io.netty.buffer.ByteBuf;
@@ -48,7 +49,7 @@ import buildcraft.core.lib.utils.BlockUtils;
 import buildcraft.core.lib.utils.Utils;
 import buildcraft.core.proxy.CoreProxy;
 
-public class TilePump extends TileBuildCraft implements IHasWork, IFluidHandler, IRedstoneEngineReceiver, ILEDProvider {
+public class TilePump extends TileBuildCraft implements IHasWork, IFluidHandler, ILEDProvider {
 
 	public static final int REBUID_DELAY = 512;
 	public static int MAX_LIQUID = FluidContainerRegistry.BUCKET_VOLUME * 16;
@@ -71,7 +72,7 @@ public class TilePump extends TileBuildCraft implements IHasWork, IFluidHandler,
 
 	public TilePump() {
 		super();
-		this.setBattery(new RFBattery(1000, 150, 0));
+		this.setBattery(new ShaftPowerInputManager("pump", 8, 1, 1024));
 	}
 
 	@Override
@@ -122,7 +123,7 @@ public class TilePump extends TileBuildCraft implements IHasWork, IFluidHandler,
 		if (fluidToPump != null) {
 			//BCLog.logger.info("TilePump: Found fluid " + fluidToPump.getFluid().getName() + " at " + index.x + ", " + index.y + ", " + index.z + ".");
 			if (isFluidAllowed(fluidToPump.getFluid()) && tank.fill(fluidToPump, false) == fluidToPump.amount) {
-				if (getBattery().useEnergy(100, 100, false) > 0) {
+				if (getBattery().isStagePowered(0)) {
 					if (fluidToPump.getFluid() == FluidRegistry.getFluid("oil"))
 					{
 						//BCLog.logger.info("TilePump: Found oil at " + index.x + ", " + index.y + ", " + index.z + ".");
@@ -407,7 +408,8 @@ public class TilePump extends TileBuildCraft implements IHasWork, IFluidHandler,
 		buf.writeShort(aimY);
 		buf.writeFloat((float) tubeY);
 		buf.writeBoolean(powered);
-		ledState = ((tick - tickPumped) < 48 ? 16 : 0) | (getBattery().getEnergyStored() * 15 / getBattery().getMaxEnergyStored());
+		//ledState = ((tick - tickPumped) < 48 ? 16 : 0) | (getBattery().getEnergyStored() * 15 / getBattery().getMaxEnergyStored());
+		ledState = ((tick - tickPumped) < 48 ? 16 : 0);
 		buf.writeByte(ledState);
 	}
 
@@ -500,11 +502,6 @@ public class TilePump extends TileBuildCraft implements IHasWork, IFluidHandler,
 	@Override
 	public FluidTankInfo[] getTankInfo(ForgeDirection from) {
 		return new FluidTankInfo[]{tank.getInfo()};
-	}
-
-	@Override
-	public boolean canConnectRedstoneEngine(ForgeDirection side) {
-		return !BuildCraftFactory.pumpsNeedRealPower;
 	}
 
 	@Override

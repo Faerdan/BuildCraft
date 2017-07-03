@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import Reika.RotaryCraft.API.Power.ShaftPowerInputManager;
 import io.netty.buffer.ByteBuf;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -23,11 +24,9 @@ import cpw.mods.fml.relauncher.Side;
 import net.minecraftforge.fluids.FluidStack;
 
 import buildcraft.BuildCraftCore;
-import buildcraft.api.blueprints.BuilderAPI;
 import buildcraft.api.blueprints.ITileBuilder;
 import buildcraft.core.LaserData;
 import buildcraft.core.internal.IBoxProvider;
-import buildcraft.core.lib.RFBattery;
 import buildcraft.core.lib.block.TileBuildCraft;
 import buildcraft.core.lib.fluids.Tank;
 import buildcraft.core.lib.network.Packet;
@@ -42,16 +41,13 @@ public abstract class TileAbstractBuilder extends TileBuildCraft implements ITil
 
 	public HashSet<BuildingItem> buildersInAction = new HashSet<BuildingItem>();
 
-	private int rfPrev = 0;
-	private int rfUnchangedCycles = 0;
-
 	public TileAbstractBuilder() {
 		super();
 		/**
 		 * The builder should not act as a gigantic energy buffer, thus we keep enough
 		 * build energy to build about 2 stacks' worth of blocks.
 		 */
-		this.setBattery(new RFBattery(2 * 64 * BuilderAPI.BUILD_ENERGY, 1000, 0));
+		this.setBattery(new ShaftPowerInputManager("abstract builder", 256, 1, 262144));
 	}
 
 	@Override
@@ -88,13 +84,6 @@ public abstract class TileAbstractBuilder extends TileBuildCraft implements ITil
 	public void updateEntity() {
 		super.updateEntity();
 
-		RFBattery battery = this.getBattery();
-
-		if (rfPrev != battery.getEnergyStored()) {
-			rfPrev = battery.getEnergyStored();
-			rfUnchangedCycles = 0;
-		}
-
 		Iterator<BuildingItem> itemIterator = buildersInAction.iterator();
 		BuildingItem i;
 
@@ -105,23 +94,6 @@ public abstract class TileAbstractBuilder extends TileBuildCraft implements ITil
 			if (i.isDone()) {
 				itemIterator.remove();
 			}
-		}
-
-		if (rfPrev != battery.getEnergyStored()) {
-			rfPrev = battery.getEnergyStored();
-			rfUnchangedCycles = 0;
-		}
-
-		rfUnchangedCycles++;
-
-		/**
-		 * After 100 cycles with no consumption or additional power, start to
-		 * slowly to decrease the amount of power available in the builder.
-		 */
-		if (rfUnchangedCycles > 100) {
-			battery.useEnergy(0, 1000, false);
-
-			rfPrev = battery.getEnergyStored();
 		}
 	}
 
@@ -144,13 +116,13 @@ public abstract class TileAbstractBuilder extends TileBuildCraft implements ITil
 		BuildCraftCore.instance.sendToPlayersNear(createLaunchItemPacket(item), this);
 	}
 
-	public final int energyAvailable() {
+	/*public final int energyAvailable() {
 		return getBattery().getEnergyStored();
 	}
 
 	public final boolean consumeEnergy(int quantity) {
 		return getBattery().useEnergy(quantity, quantity, false) > 0;
-	}
+	}*/
 
 	@Override
 	public void writeToNBT(NBTTagCompound nbttagcompound) {
@@ -160,9 +132,6 @@ public abstract class TileAbstractBuilder extends TileBuildCraft implements ITil
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		super.readFromNBT(nbttagcompound);
-
-		rfPrev = getBattery().getEnergyStored();
-		rfUnchangedCycles = 0;
 	}
 
 	@Override

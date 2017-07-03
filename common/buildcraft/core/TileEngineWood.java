@@ -101,6 +101,11 @@ public class TileEngineWood extends TileEngineBase implements IRedstoneEngine {
 	}
 
 	@Override
+	public int receiveEnergy(ForgeDirection from, int maxReceive, boolean simulate) {
+		return 0;
+	}
+
+	@Override
 	public int getEnergyStored(ForgeDirection side) {
 		return 0;
 	}

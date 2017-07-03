@@ -211,7 +211,7 @@ public class BptBuilderTemplate extends BptBuilderBase {
 					|| !BuildCraftAPI.isSoftBlock(world, slot.x, slot.y, slot.z)) {
 				iteratorBuild.remove();
 				markLocationUsed(slot.x, slot.y, slot.z);
-			} else if (builder.consumeEnergy(BuilderAPI.BUILD_ENERGY)) {
+			} else if (builder.getBattery().isStagePowered(0)) { // @ToDo: implement rotary for builders in a more dynamic way.... was builder.consumeEnergy(BuilderAPI.BUILD_ENERGY)
 				slot.addStackConsumed(firstSlotToConsume.decreaseStackInSlot(1));
 				result = slot;
 				iteratorBuild.remove();

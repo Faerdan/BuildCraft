@@ -10,6 +10,9 @@ package buildcraft.core.lib.block;
 
 import java.util.HashSet;
 
+import Reika.RotaryCraft.API.Power.IAdvancedShaftPowerReceiver;
+import Reika.RotaryCraft.API.Power.ShaftPowerInputManager;
+import buildcraft.api.core.BCLog;
 import io.netty.buffer.ByteBuf;
 
 import net.minecraft.block.Block;
@@ -21,12 +24,10 @@ import net.minecraft.tileentity.TileEntity;
 
 import net.minecraftforge.common.util.ForgeDirection;
 
-import cofh.api.energy.IEnergyHandler;
 import buildcraft.BuildCraftCore;
 import buildcraft.api.core.ISerializable;
 import buildcraft.api.tiles.IControllable;
 import buildcraft.core.DefaultProps;
-import buildcraft.core.lib.RFBattery;
 import buildcraft.core.lib.TileBuffer;
 import buildcraft.core.lib.network.Packet;
 import buildcraft.core.lib.network.PacketTileUpdate;
@@ -38,226 +39,235 @@ import buildcraft.core.lib.utils.Utils;
  * we expect the tiles supporting it to implement it - but TileBuildCraft
  * provides all the underlying functionality to stop code repetition.
  */
-public abstract class TileBuildCraft extends TileEntity implements IEnergyHandler, ISerializable {
-	protected TileBuffer[] cache;
-	protected HashSet<EntityPlayer> guiWatchers = new HashSet<EntityPlayer>();
-	protected IControllable.Mode mode;
+public abstract class TileBuildCraft extends TileEntity implements IAdvancedShaftPowerReceiver, ISerializable {
+    protected TileBuffer[] cache;
+    protected HashSet<EntityPlayer> guiWatchers = new HashSet<EntityPlayer>();
+    protected IControllable.Mode mode;
 
-	private boolean init = false;
-	private String owner = "[BuildCraft]";
-	private RFBattery battery;
+    private boolean init = false;
+    private String owner = "[BuildCraft]";
+    private ShaftPowerInputManager shaftPowerInputManager;
 
-	private int receivedTick, extractedTick;
-	private long worldTimeEnergyReceive;
+    public String getOwner() {
+        return owner;
+    }
 
-	public String getOwner() {
-		return owner;
-	}
+    public void addGuiWatcher(EntityPlayer player) {
+        if (!guiWatchers.contains(player)) {
+            guiWatchers.add(player);
+        }
+    }
 
-	public void addGuiWatcher(EntityPlayer player) {
-		if (!guiWatchers.contains(player)) {
-			guiWatchers.add(player);
-		}
-	}
+    public void removeGuiWatcher(EntityPlayer player) {
+        if (guiWatchers.contains(player)) {
+            guiWatchers.remove(player);
+        }
+    }
 
-	public void removeGuiWatcher(EntityPlayer player) {
-		if (guiWatchers.contains(player)) {
-			guiWatchers.remove(player);
-		}
-	}
+    @Override
+    public void updateEntity() {
+        if (!init && !isInvalid()) {
+            initialize();
+            init = true;
+        }
 
-	@Override
-	public void updateEntity() {
-		if (!init && !isInvalid()) {
-			initialize();
-			init = true;
-		}
+        /*if (shaftPowerInputManager != null) {
+            shaftPowerInputManager.reset();
+        }*/
+    }
 
-		if (battery != null) {
-			receivedTick = 0;
-			extractedTick = 0;
-		}
-	}
+    public void initialize() {
 
-	public void initialize() {
+    }
 
-	}
+    @Override
+    public void validate() {
+        super.validate();
+        cache = null;
+    }
 
-	@Override
-	public void validate() {
-		super.validate();
-		cache = null;
-	}
+    @Override
+    public void invalidate() {
+        init = false;
+        super.invalidate();
+        cache = null;
+    }
 
-	@Override
-	public void invalidate() {
-		init = false;
-		super.invalidate();
-		cache = null;
-	}
+    public void onBlockPlacedBy(EntityLivingBase entity, ItemStack stack) {
+        if (entity instanceof EntityPlayer) {
+            owner = ((EntityPlayer) entity).getDisplayName();
+        }
+    }
 
-	public void onBlockPlacedBy(EntityLivingBase entity, ItemStack stack) {
-		if (entity instanceof EntityPlayer) {
-			owner = ((EntityPlayer) entity).getDisplayName();
-		}
-	}
+    public void destroy() {
+        cache = null;
+    }
 
-	public void destroy() {
-		cache = null;
-	}
+    public void sendNetworkUpdate() {
+        if (worldObj != null && !worldObj.isRemote) {
+            BuildCraftCore.instance.sendToPlayers(getPacketUpdate(), worldObj,
+                    xCoord, yCoord, zCoord, getNetworkUpdateRange());
+        }
+    }
 
-	public void sendNetworkUpdate() {
-		if (worldObj != null && !worldObj.isRemote) {
-			BuildCraftCore.instance.sendToPlayers(getPacketUpdate(), worldObj,
-					xCoord, yCoord, zCoord, getNetworkUpdateRange());
-		}
-	}
+    protected int getNetworkUpdateRange() {
+        return DefaultProps.NETWORK_UPDATE_RANGE;
+    }
 
-	protected int getNetworkUpdateRange() {
-		return DefaultProps.NETWORK_UPDATE_RANGE;
-	}
+    public void writeData(ByteBuf stream) {
 
-	public void writeData(ByteBuf stream) {
+    }
 
-	}
+    public void readData(ByteBuf stream) {
 
-	public void readData(ByteBuf stream) {
+    }
 
-	}
+    public Packet getPacketUpdate() {
+        return new PacketTileUpdate(this);
+    }
 
-	public Packet getPacketUpdate() {
-		return new PacketTileUpdate(this);
-	}
+    @Override
+    public net.minecraft.network.Packet getDescriptionPacket() {
+        return Utils.toPacket(getPacketUpdate(), 0);
+    }
 
-	@Override
-	public net.minecraft.network.Packet getDescriptionPacket() {
-		return Utils.toPacket(getPacketUpdate(), 0);
-	}
+    @Override
+    public void writeToNBT(NBTTagCompound nbt) {
+        super.writeToNBT(nbt);
+        nbt.setString("owner", owner);
+        if (shaftPowerInputManager != null) {
+            NBTTagCompound powerNBT = new NBTTagCompound();
+            shaftPowerInputManager.writeToNBT(powerNBT);
+            nbt.setTag("power", powerNBT);
+        }
+        if (mode != null) {
+            nbt.setByte("lastMode", (byte) mode.ordinal());
+        }
+    }
 
-	@Override
-	public void writeToNBT(NBTTagCompound nbt) {
-		super.writeToNBT(nbt);
-		nbt.setString("owner", owner);
-		if (battery != null) {
-			NBTTagCompound batteryNBT = new NBTTagCompound();
-			battery.writeToNBT(batteryNBT);
-			nbt.setTag("battery", batteryNBT);
-		}
-		if (mode != null) {
-			nbt.setByte("lastMode", (byte) mode.ordinal());
-		}
-	}
+    @Override
+    public void readFromNBT(NBTTagCompound nbt) {
+        super.readFromNBT(nbt);
+        if (nbt.hasKey("owner")) {
+            owner = nbt.getString("owner");
+        }
+        if (shaftPowerInputManager != null) {
+            shaftPowerInputManager.readFromNBT(nbt.getCompoundTag("power"));
+        }
+        if (nbt.hasKey("lastMode")) {
+            mode = IControllable.Mode.values()[nbt.getByte("lastMode")];
+        }
+    }
 
-	@Override
-	public void readFromNBT(NBTTagCompound nbt) {
-		super.readFromNBT(nbt);
-		if (nbt.hasKey("owner")) {
-			owner = nbt.getString("owner");
-		}
-		if (battery != null) {
-			battery.readFromNBT(nbt.getCompoundTag("battery"));
-		}
-		if (nbt.hasKey("lastMode")) {
-			mode = IControllable.Mode.values()[nbt.getByte("lastMode")];
-		}
-	}
+    @Override
+    public int hashCode() {
+        return (xCoord * 37 + yCoord) * 37 + zCoord;
+    }
 
-	protected int getTicksSinceEnergyReceived() {
-		return (int) (worldObj.getTotalWorldTime() - worldTimeEnergyReceive);
-	}
+    @Override
+    public boolean equals(Object cmp) {
+        return this == cmp;
+    }
 
+    public ShaftPowerInputManager getBattery() {
+        return shaftPowerInputManager;
+    }
 
-	@Override
-	public int hashCode() {
-		return (xCoord * 37 + yCoord) * 37 + zCoord;
-	}
+    protected void setBattery(ShaftPowerInputManager shaftPowerInputManager) {
+        this.shaftPowerInputManager = shaftPowerInputManager;
+    }
 
-	@Override
-	public boolean equals(Object cmp) {
-		return this == cmp;
-	}
+    public Block getBlock(ForgeDirection side) {
+        if (cache == null) {
+            cache = TileBuffer.makeBuffer(worldObj, xCoord, yCoord, zCoord, false);
+        }
+        return cache[side.ordinal()].getBlock();
+    }
 
-	@Override
-	public boolean canConnectEnergy(ForgeDirection from) {
-		return battery != null;
-	}
+    public TileEntity getTile(ForgeDirection side) {
+        if (cache == null) {
+            cache = TileBuffer.makeBuffer(worldObj, xCoord, yCoord, zCoord, false);
+        }
+        return cache[side.ordinal()].getTile();
+    }
 
-	@Override
-	public int receiveEnergy(ForgeDirection from, int maxReceive,
-							 boolean simulate) {
-		if (battery != null && this.canConnectEnergy(from)) {
-			int received = battery.receiveEnergy(Math.min(maxReceive, battery.getMaxEnergyReceive() - receivedTick), simulate);
-			if (!simulate) {
-				receivedTick += received;
-				worldTimeEnergyReceive = worldObj.getTotalWorldTime();
-			}
-			return received;
-		} else {
-			return 0;
-		}
-	}
+    public IControllable.Mode getControlMode() {
+        return mode;
+    }
 
-	/**
-	 * If you want to use this, implement IEnergyProvider.
-	 */
-	public int extractEnergy(ForgeDirection from, int maxExtract,
-							 boolean simulate) {
-		if (battery != null && this.canConnectEnergy(from)) {
-			int extracted = battery.extractEnergy(Math.min(maxExtract, battery.getMaxEnergyExtract() - extractedTick), simulate);
-			if (!simulate) {
-				extractedTick += extracted;
-			}
-			return extracted;
-		} else {
-			return 0;
-		}
-	}
+    public void setControlMode(IControllable.Mode mode) {
+        this.mode = mode;
+    }
 
-	@Override
-	public int getEnergyStored(ForgeDirection from) {
-		if (battery != null && this.canConnectEnergy(from)) {
-			return battery.getEnergyStored();
-		} else {
-			return 0;
-		}
-	}
+    /* Rotary Power */
+    @Override
+    public boolean addPower(int addTorque, int addOmega, long addPower, ForgeDirection inputDirection) {
+        BCLog.logger.info("quarry try addPower t: " + addTorque + ", o: " + addOmega);
+        return shaftPowerInputManager != null && shaftPowerInputManager.addPower(addTorque, addOmega, addPower, inputDirection);
+    }
 
-	@Override
-	public int getMaxEnergyStored(ForgeDirection from) {
-		if (battery != null && this.canConnectEnergy(from)) {
-			return battery.getMaxEnergyStored();
-		} else {
-			return 0;
-		}
-	}
+    @Override
+    public int getStageCount() {
+        return shaftPowerInputManager != null ? shaftPowerInputManager.getStageCount() : 0;
+    }
 
-	public RFBattery getBattery() {
-		return battery;
-	}
+    @Override
+    public void setIORenderAlpha(int i) {
+        if (shaftPowerInputManager != null) shaftPowerInputManager.setIORenderAlpha(i);
+    }
 
-	protected void setBattery(RFBattery battery) {
-		this.battery = battery;
-	}
+    @Override
+    public boolean canReadFrom(ForgeDirection forgeDirection) {
+        return shaftPowerInputManager != null && shaftPowerInputManager.canReadFrom(forgeDirection);
+    }
 
-	public Block getBlock(ForgeDirection side) {
-		if (cache == null) {
-			cache = TileBuffer.makeBuffer(worldObj, xCoord, yCoord, zCoord, false);
-		}
-		return cache[side.ordinal()].getBlock();
-	}
+    @Override
+    public boolean hasMismatchedInputs() {
+        return shaftPowerInputManager != null && shaftPowerInputManager.hasMismatchedInputs();
+    }
 
-	public TileEntity getTile(ForgeDirection side) {
-		if (cache == null) {
-			cache = TileBuffer.makeBuffer(worldObj, xCoord, yCoord, zCoord, false);
-		}
-		return cache[side.ordinal()].getTile();
-	}
+    @Override
+    public boolean isReceiving() {
+        return shaftPowerInputManager != null && shaftPowerInputManager.isReceiving();
+    }
 
-	public IControllable.Mode getControlMode() {
-		return mode;
-	}
+    @Override
+    public int getMinTorque(int stageIndex) {
+        return shaftPowerInputManager != null ? shaftPowerInputManager.getMinTorque(stageIndex) : 1;
+    }
 
-	public void setControlMode(IControllable.Mode mode) {
-		this.mode = mode;
-	}
+    @Override
+    public int getMinOmega(int stageIndex) {
+        return shaftPowerInputManager != null ? shaftPowerInputManager.getMinOmega(stageIndex) : 1;
+    }
+
+    @Override
+    public long getMinPower(int stageIndex) {
+        return shaftPowerInputManager != null ? shaftPowerInputManager.getMinPower(stageIndex) : 1;
+    }
+
+    @Override
+    public long getPower() {
+        return shaftPowerInputManager != null ? shaftPowerInputManager.getPower() : 0;
+    }
+
+    @Override
+    public int getOmega() {
+        return shaftPowerInputManager != null ? shaftPowerInputManager.getOmega() : 0;
+    }
+
+    @Override
+    public int getTorque() {
+        return shaftPowerInputManager != null ? shaftPowerInputManager.getTorque() : 0;
+    }
+
+    @Override
+    public String getName() {
+        return shaftPowerInputManager != null ? shaftPowerInputManager.getName() : "[BuildCraft]";
+    }
+
+    @Override
+    public int getIORenderAlpha() {
+        return shaftPowerInputManager != null ? shaftPowerInputManager.getIORenderAlpha() : 0;
+    }
 }

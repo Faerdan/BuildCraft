@@ -54,6 +54,8 @@ import buildcraft.core.lib.inventory.InventoryCopy;
 import buildcraft.core.lib.inventory.InventoryIterator;
 import buildcraft.core.lib.utils.BlockUtils;
 
+
+// @ToDo: Update builder to use rotary power in a more dynamic way
 public class BptBuilderBlueprint extends BptBuilderBase {
 	protected HashSet<Integer> builtEntities = new HashSet<Integer>();
 	protected HashMap<BuilderItemMetaPair, List<BuildingSlotBlock>> buildList = new HashMap<BuilderItemMetaPair, List<BuildingSlotBlock>>();
@@ -329,7 +331,7 @@ public class BptBuilderBlueprint extends BptBuilderBase {
 	}
 
 	protected boolean readyForSlotLookup(TileAbstractBuilder builder) {
-		return builder == null || builder.energyAvailable() >= BuilderAPI.BREAK_ENERGY;
+		return builder == null || builder.getBattery().isStagePowered(0);//builder.energyAvailable() >= BuilderAPI.BREAK_ENERGY;
 	}
 
 	/**
@@ -442,7 +444,7 @@ public class BptBuilderBlueprint extends BptBuilderBase {
 							// When the item reaches the actual block, we'll
 							// verify that the location is indeed clear, and
 							// avoid building otherwise.
-							builder.consumeEnergy(slot.getEnergyRequirement());
+							//builder.consumeEnergy(slot.getEnergyRequirement());
 							useRequirements(builder, slot);
 
 							iterator.remove();
@@ -482,7 +484,7 @@ public class BptBuilderBlueprint extends BptBuilderBase {
 				recomputeNeededItems();
 			} else {
 				if (checkRequirements(builder, slot.schematic)) {
-					builder.consumeEnergy(slot.getEnergyRequirement());
+					//builder.consumeEnergy(slot.getEnergyRequirement());
 					useRequirements(builder, slot);
 
 					it.remove();
@@ -523,7 +525,7 @@ public class BptBuilderBlueprint extends BptBuilderBase {
 				stacksUsed.add(s);
 			}
 
-			return !(builder.energyAvailable() < slot.getEnergyRequirement(stacksUsed));
+			return !builder.getBattery().isStagePowered(0);//(builder.energyAvailable() < slot.getEnergyRequirement(stacksUsed));
 		}
 
 		IInventory invCopy = new InventoryCopy(builder);
@@ -569,7 +571,7 @@ public class BptBuilderBlueprint extends BptBuilderBase {
 			}
 		}
 
-		return builder.energyAvailable() >= slot.getEnergyRequirement(stacksUsed);
+		return builder.getBattery().isStagePowered(0);//builder.energyAvailable() >= slot.getEnergyRequirement(stacksUsed);
 	}
 
 	@Override

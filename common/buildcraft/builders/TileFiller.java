@@ -116,7 +116,7 @@ public class TileFiller extends TileAbstractBuilder implements IHasWork, IContro
 			return;
 		}
 
-		if (getBattery().getEnergyStored() < POWER_ACTIVATION) {
+		if (getBattery().isStagePowered(0)) {
 			return;
 		}
 

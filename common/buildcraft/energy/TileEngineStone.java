@@ -159,4 +159,9 @@ public class TileEngineStone extends TileEngineWithInventory {
 	public boolean hasCustomInventoryName() {
 		return false;
 	}
+
+	@Override
+	public int receiveEnergy(ForgeDirection from, int maxReceive, boolean simulate) {
+		return 0;
+	}
 }

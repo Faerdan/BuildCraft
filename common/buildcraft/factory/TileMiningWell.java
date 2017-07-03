@@ -8,6 +8,7 @@
  */
 package buildcraft.factory;
 
+import Reika.RotaryCraft.API.Power.ShaftPowerInputManager;
 import io.netty.buffer.ByteBuf;
 
 import net.minecraft.world.World;
@@ -38,7 +39,8 @@ public class TileMiningWell extends TileBuildCraft implements IHasWork, IPipeCon
 
 	public TileMiningWell() {
 		super();
-		this.setBattery(new RFBattery(2 * 64 * BuilderAPI.BREAK_ENERGY, BuilderAPI.BREAK_ENERGY * 4 + BuilderAPI.BUILD_ENERGY, 0));
+		//this.setBattery(new RFBattery(2 * 64 * BuilderAPI.BREAK_ENERGY, BuilderAPI.BREAK_ENERGY * 4 + BuilderAPI.BUILD_ENERGY, 0));
+		this.setBattery(new ShaftPowerInputManager("mining well", 256, 1, 65536));
 	}
 
 	/**
@@ -68,7 +70,7 @@ public class TileMiningWell extends TileBuildCraft implements IHasWork, IPipeCon
 			return;
 		}
 
-		if (getBattery().getEnergyStored() == 0) {
+		if (!getBattery().isStagePowered(0)) {
 			return;
 		}
 
@@ -83,8 +85,6 @@ public class TileMiningWell extends TileBuildCraft implements IHasWork, IPipeCon
 
 			if (depth < 1 || depth < yCoord - BuildCraftFactory.miningDepth || !BlockUtils.canChangeBlock(world, xCoord, depth, zCoord)) {
 				isDigging = false;
-				// Drain energy, because at 0 energy this will stop doing calculations.
-				getBattery().useEnergy(0, 10, false);
 				return;
 			}
 
@@ -100,8 +100,7 @@ public class TileMiningWell extends TileBuildCraft implements IHasWork, IPipeCon
 			isDigging = true;
 			ticksSinceAction = 0;
 
-			int usedEnergy = miner.acceptEnergy(getBattery().getEnergyStored());
-			getBattery().useEnergy(usedEnergy, usedEnergy, false);
+			miner.acceptEnergy(getBattery().getTorque());
 
 			if (miner.hasFailed()) {
 				isDigging = false;
@@ -128,7 +127,8 @@ public class TileMiningWell extends TileBuildCraft implements IHasWork, IPipeCon
 	public void writeData(ByteBuf stream) {
 		super.writeData(stream);
 
-		ledState = (ticksSinceAction < 2 ? 16 : 0) | (getBattery().getEnergyStored() * 15 / getBattery().getMaxEnergyStored());
+		//ledState = (ticksSinceAction < 2 ? 16 : 0) | (getBattery().getEnergyStored() * 15 / getBattery().getMaxEnergyStored());
+		ledState = (ticksSinceAction < 2 ? 16 : 0);
 		stream.writeByte(ledState);
 	}
 

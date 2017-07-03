@@ -11,6 +11,7 @@ package buildcraft.factory;
 import java.lang.ref.WeakReference;
 import java.util.List;
 
+import Reika.RotaryCraft.API.Power.ShaftPowerInputManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
@@ -42,7 +43,7 @@ import buildcraft.core.lib.utils.CraftingUtils;
 import buildcraft.core.lib.utils.Utils;
 import buildcraft.core.proxy.CoreProxy;
 
-public class TileAutoWorkbench extends TileBuildCraft implements ISidedInventory, IHasWork, IRedstoneEngineReceiver, IDebuggable {
+public class TileAutoWorkbench extends TileBuildCraft implements ISidedInventory, IHasWork, IDebuggable {
 
 	public static final int SLOT_RESULT = 9;
 	public static final int CRAFT_TIME = 256;
@@ -77,30 +78,19 @@ public class TileAutoWorkbench extends TileBuildCraft implements ISidedInventory
 	private int[] bindings = new int[9];
 	private int[] bindingCounts = new int[9];
 
-	private int update = Utils.RANDOM.nextInt();
+	private int updateTicks;
 
 	private boolean hasWork = false;
 	private boolean scheduledCacheRebuild = false;
 
 	public TileAutoWorkbench() {
 		super();
-		this.setBattery(new RFBattery(16, 16, 0));
+		this.setBattery(new ShaftPowerInputManager("auto workbench", 256));
 	}
 
 	@Override
 	public boolean hasWork() {
 		return hasWork;
-	}
-
-	@Override
-	public boolean canConnectRedstoneEngine(ForgeDirection side) {
-		return true;
-	}
-
-	@Override
-	public boolean canConnectEnergy(ForgeDirection side) {
-		TileEntity tile = worldObj.getTileEntity(xCoord + side.offsetX, yCoord + side.offsetY, zCoord + side.offsetZ);
-		return tile instanceof IRedstoneEngine;
 	}
 
 	@Override
@@ -321,13 +311,13 @@ public class TileAutoWorkbench extends TileBuildCraft implements ISidedInventory
 			return;
 		}
 
-		int updateNext = update + getBattery().getEnergyStored() + 1;
-		int updateThreshold = (update & ~15) + 16;
-		update = Math.min(updateThreshold, updateNext);
-		if ((update % UPDATE_TIME) == 0) {
+		if (getBattery().isStagePowered(0))
+		{
+			updateTicks++;
+		}
+		if ((updateTicks % UPDATE_TIME) == 0) {
 			updateCrafting();
 		}
-		getBattery().setEnergy(0);
 	}
 
 	public int getProgressScaled(int i) {

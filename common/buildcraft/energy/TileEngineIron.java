@@ -479,4 +479,9 @@ public class TileEngineIron extends TileEngineWithInventory implements IFluidHan
 	public boolean blockFluidHandlerTriggers(ForgeDirection side) {
 		return true;
 	}
+
+	@Override
+	public int receiveEnergy(ForgeDirection from, int maxReceive, boolean simulate) {
+		return 0;
+	}
 }
