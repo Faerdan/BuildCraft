@@ -40,7 +40,7 @@ public class TileMiningWell extends TileBuildCraft implements IHasWork, IPipeCon
 	public TileMiningWell() {
 		super();
 		//this.setBattery(new RFBattery(2 * 64 * BuilderAPI.BREAK_ENERGY, BuilderAPI.BREAK_ENERGY * 4 + BuilderAPI.BUILD_ENERGY, 0));
-		this.setBattery(new ShaftPowerInputManager("mining well", 256, 1, 65536));
+		this.setBattery(new ShaftPowerInputManager(this, "mining well", 256, 1, 65536));
 	}
 
 	/**

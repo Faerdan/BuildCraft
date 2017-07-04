@@ -72,7 +72,7 @@ public class TilePump extends TileBuildCraft implements IHasWork, IFluidHandler,
 
 	public TilePump() {
 		super();
-		this.setBattery(new ShaftPowerInputManager("pump", 8, 1, 1024));
+		this.setBattery(new ShaftPowerInputManager(this, "pump", 8, 1, 1024));
 	}
 
 	@Override
@@ -404,22 +404,24 @@ public class TilePump extends TileBuildCraft implements IHasWork, IFluidHandler,
 	}
 
 	@Override
-	public void writeData(ByteBuf buf) {
-		buf.writeShort(aimY);
-		buf.writeFloat((float) tubeY);
-		buf.writeBoolean(powered);
+	public void writeData(ByteBuf stream) {
+		super.writeData(stream);
+		stream.writeShort(aimY);
+		stream.writeFloat((float) tubeY);
+		stream.writeBoolean(powered);
 		//ledState = ((tick - tickPumped) < 48 ? 16 : 0) | (getBattery().getEnergyStored() * 15 / getBattery().getMaxEnergyStored());
 		ledState = ((tick - tickPumped) < 48 ? 16 : 0);
-		buf.writeByte(ledState);
+		stream.writeByte(ledState);
 	}
 
 	@Override
-	public void readData(ByteBuf data) {
-		aimY = data.readShort();
-		tubeY = data.readFloat();
-		powered = data.readBoolean();
+	public void readData(ByteBuf stream) {
+		super.writeData(stream);
+		aimY = stream.readShort();
+		tubeY = stream.readFloat();
+		powered = stream.readBoolean();
 
-		int newLedState = data.readUnsignedByte();
+		int newLedState = stream.readUnsignedByte();
 		if (newLedState != ledState) {
 			ledState = newLedState;
 			worldObj.markBlockRangeForRenderUpdate(xCoord, yCoord, zCoord, xCoord, yCoord, zCoord);

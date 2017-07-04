@@ -47,7 +47,7 @@ public abstract class TileAbstractBuilder extends TileBuildCraft implements ITil
 		 * The builder should not act as a gigantic energy buffer, thus we keep enough
 		 * build energy to build about 2 stacks' worth of blocks.
 		 */
-		this.setBattery(new ShaftPowerInputManager("abstract builder", 256, 1, 262144));
+		this.setBattery(new ShaftPowerInputManager(this, "abstract builder", 256, 1, 262144));
 	}
 
 	@Override
@@ -136,6 +136,7 @@ public abstract class TileAbstractBuilder extends TileBuildCraft implements ITil
 
 	@Override
 	public void readData(ByteBuf stream) {
+		super.readData(stream);
 		int size = stream.readUnsignedShort();
 		pathLasers.clear();
 		for (int i = 0; i < size; i++) {
@@ -147,6 +148,7 @@ public abstract class TileAbstractBuilder extends TileBuildCraft implements ITil
 
 	@Override
 	public void writeData(ByteBuf stream) {
+		super.writeData(stream);
 		stream.writeShort(pathLasers.size());
 		for (LaserData ld : pathLasers) {
 			ld.writeData(stream);

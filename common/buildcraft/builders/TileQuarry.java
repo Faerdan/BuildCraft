@@ -12,6 +12,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import Reika.RotaryCraft.API.Power.IShaftPowerInputCaller;
 import Reika.RotaryCraft.API.Power.PowerStage;
 import Reika.RotaryCraft.API.Power.ShaftPowerInputManager;
 import com.google.common.collect.Lists;
@@ -68,6 +69,7 @@ import buildcraft.core.lib.utils.Utils;
 import buildcraft.core.proxy.CoreProxy;
 
 public class TileQuarry extends TileAbstractBuilder implements IHasWork, ISidedInventory, IDropControlInventory, IPipeConnection, IControllable, ILEDProvider {
+
 	private enum Stage {
 		BUILDING,
 		DIGGING,
@@ -106,7 +108,7 @@ public class TileQuarry extends TileAbstractBuilder implements IHasWork, ISidedI
 
 	public TileQuarry() {
 		box.kind = Kind.STRIPES;
-		this.setBattery(new ShaftPowerInputManager("quarry", new PowerStage[] { new PowerStage(256, 1, 262144), new PowerStage(1, 4096, 131072)}));
+		this.setBattery(new ShaftPowerInputManager(this, "quarry", 1, 1, 1));
 	}
 
 	public void createUtilsIfNeeded() {
@@ -213,13 +215,13 @@ public class TileQuarry extends TileAbstractBuilder implements IHasWork, ISidedI
 		} else if (stage == Stage.MOVING) {
 			//int energyUsed = this.getBattery().useEnergy(20, (int) Math.ceil(20D + (double) getBattery().getEnergyStored() / 10), false);
 
-			if (getBattery().isStagePowered(1))
+			if (getBattery().isStagePowered(0))
 			{
 			//if (energyUsed >= 20) {
 
 				//speed = 0.1 + energyUsed / 2000F;
 
-				speed = 0.1 + Math.min(0.9, (double)(getOmega() - getBattery().getMinOmega(1)) / (double)getBattery().getMinOmega(1));
+				speed = 0.01D + Math.min(0.99D, (double)getOmega() / 8096D);
 
 				// If it's raining or snowing above the head, slow down.
 				if (worldObj.isRaining()) {
@@ -253,7 +255,7 @@ public class TileQuarry extends TileAbstractBuilder implements IHasWork, ISidedI
 			return;
 		}
 
-		miner.acceptEnergy(getBattery().getTorque());
+		miner.acceptEnergy(getBattery().getTorque() / 4);
 
 		if (miner.hasMined()) {
 			// Collect any lost items laying around.

@@ -35,7 +35,7 @@ public class TileHopper extends TileBuildCraft implements IInventory {
 	@Override
 	public void initialize() {
 		//this.setBattery(new RFBattery(10, 10, 0));
-		this.setBattery(new ShaftPowerInputManager("hopper", 256));
+		this.setBattery(new ShaftPowerInputManager(this, "hopper", 256));
 		inventory.addListener(this);
 	}
 

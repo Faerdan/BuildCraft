@@ -63,7 +63,7 @@ public class TileRefinery extends TileBuildCraft implements IFluidHandler, IHasW
 
 	public TileRefinery() {
 		super();
-		this.setBattery(new ShaftPowerInputManager("refinery", 1, 16384, 16384));
+		this.setBattery(new ShaftPowerInputManager(this, "refinery", 1, 16384, 16384));
 	}
 
 	@Override
@@ -103,7 +103,7 @@ public class TileRefinery extends TileBuildCraft implements IFluidHandler, IHasW
 			return;
 		}*/
 
-		currentRecipeProgressTicks += 4F + (8F * Math.min(1, (double)(getOmega() - getBattery().getMinOmega(0)) / (double)getBattery().getMinOmega(0)));
+		currentRecipeProgressTicks += 2F + (8F * Math.min(1, (double)(getOmega() - getBattery().getMinOmega(0)) / (double)getBattery().getMinOmega(0)));
 
 		if (currentRecipeProgressTicks >= craftingResult.energyCost) {
 			CraftingResult<FluidStack> r = currentRecipe.craft(this, true);

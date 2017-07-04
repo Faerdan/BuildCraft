@@ -11,6 +11,7 @@ package buildcraft.core.lib.block;
 import java.util.HashSet;
 
 import Reika.RotaryCraft.API.Power.IAdvancedShaftPowerReceiver;
+import Reika.RotaryCraft.API.Power.IShaftPowerInputCaller;
 import Reika.RotaryCraft.API.Power.ShaftPowerInputManager;
 import buildcraft.api.core.BCLog;
 import io.netty.buffer.ByteBuf;
@@ -39,7 +40,7 @@ import buildcraft.core.lib.utils.Utils;
  * we expect the tiles supporting it to implement it - but TileBuildCraft
  * provides all the underlying functionality to stop code repetition.
  */
-public abstract class TileBuildCraft extends TileEntity implements IAdvancedShaftPowerReceiver, ISerializable {
+public abstract class TileBuildCraft extends TileEntity implements IShaftPowerInputCaller, ISerializable {
     protected TileBuffer[] cache;
     protected HashSet<EntityPlayer> guiWatchers = new HashSet<EntityPlayer>();
     protected IControllable.Mode mode;
@@ -71,9 +72,9 @@ public abstract class TileBuildCraft extends TileEntity implements IAdvancedShaf
             init = true;
         }
 
-        /*if (shaftPowerInputManager != null) {
-            shaftPowerInputManager.reset();
-        }*/
+        if (shaftPowerInputManager != null) {
+            shaftPowerInputManager.update();
+        }
     }
 
     public void initialize() {
@@ -115,11 +116,33 @@ public abstract class TileBuildCraft extends TileEntity implements IAdvancedShaf
     }
 
     public void writeData(ByteBuf stream) {
+        if (shaftPowerInputManager != null)
+        {
+            stream.writeInt(shaftPowerInputManager.getTorque());
+            stream.writeInt(shaftPowerInputManager.getOmega());
+            stream.writeBoolean(shaftPowerInputManager.hasMismatchedInputs());
 
+            for (int stageIndex = 0; stageIndex < getStageCount(); stageIndex++)
+            {
+                stream.writeInt(getMinTorque(stageIndex));
+                stream.writeInt(getMinOmega(stageIndex));
+                stream.writeLong(getMinPower(stageIndex));
+            }
+        }
     }
 
     public void readData(ByteBuf stream) {
+        if (shaftPowerInputManager != null)
+        {
+            shaftPowerInputManager.setState(stream.readInt(), stream.readInt(), stream.readBoolean());
 
+            for (int stageIndex = 0; stageIndex < getStageCount(); stageIndex++)
+            {
+                shaftPowerInputManager.setMinTorque(stageIndex, stream.readInt());
+                shaftPowerInputManager.setMinOmega(stageIndex, stream.readInt());
+                shaftPowerInputManager.setMinPower(stageIndex, stream.readLong());
+            }
+        }
     }
 
     public Packet getPacketUpdate() {
@@ -135,11 +158,6 @@ public abstract class TileBuildCraft extends TileEntity implements IAdvancedShaf
     public void writeToNBT(NBTTagCompound nbt) {
         super.writeToNBT(nbt);
         nbt.setString("owner", owner);
-        if (shaftPowerInputManager != null) {
-            NBTTagCompound powerNBT = new NBTTagCompound();
-            shaftPowerInputManager.writeToNBT(powerNBT);
-            nbt.setTag("power", powerNBT);
-        }
         if (mode != null) {
             nbt.setByte("lastMode", (byte) mode.ordinal());
         }
@@ -150,9 +168,6 @@ public abstract class TileBuildCraft extends TileEntity implements IAdvancedShaf
         super.readFromNBT(nbt);
         if (nbt.hasKey("owner")) {
             owner = nbt.getString("owner");
-        }
-        if (shaftPowerInputManager != null) {
-            shaftPowerInputManager.readFromNBT(nbt.getCompoundTag("power"));
         }
         if (nbt.hasKey("lastMode")) {
             mode = IControllable.Mode.values()[nbt.getByte("lastMode")];
@@ -200,9 +215,19 @@ public abstract class TileBuildCraft extends TileEntity implements IAdvancedShaf
     }
 
     /* Rotary Power */
+
+    @Override
+    public void onPowerChange(ShaftPowerInputManager shaftPowerInputManager) {
+        sendNetworkUpdate();
+    }
+
+    @Override
+    public TileEntity getTileEntity() {
+        return this;
+    }
+
     @Override
     public boolean addPower(int addTorque, int addOmega, long addPower, ForgeDirection inputDirection) {
-        BCLog.logger.info("quarry try addPower t: " + addTorque + ", o: " + addOmega);
         return shaftPowerInputManager != null && shaftPowerInputManager.addPower(addTorque, addOmega, addPower, inputDirection);
     }
 
@@ -218,7 +243,7 @@ public abstract class TileBuildCraft extends TileEntity implements IAdvancedShaf
 
     @Override
     public boolean canReadFrom(ForgeDirection forgeDirection) {
-        return shaftPowerInputManager != null && shaftPowerInputManager.canReadFrom(forgeDirection);
+        return true;
     }
 
     @Override

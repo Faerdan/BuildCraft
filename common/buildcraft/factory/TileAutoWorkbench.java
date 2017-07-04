@@ -85,7 +85,7 @@ public class TileAutoWorkbench extends TileBuildCraft implements ISidedInventory
 
 	public TileAutoWorkbench() {
 		super();
-		this.setBattery(new ShaftPowerInputManager("auto workbench", 256));
+		this.setBattery(new ShaftPowerInputManager(this, "auto workbench", 256));
 	}
 
 	@Override
