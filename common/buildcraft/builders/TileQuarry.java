@@ -168,6 +168,25 @@ public class TileQuarry extends TileAbstractBuilder implements IHasWork, ISidedI
 				&& worldObj.blockExists(box.xMax, box.yMax, box.zMax);
 	}
 
+	public boolean isArmMoving()
+	{
+		return stage == Stage.MOVING;
+	}
+
+	private void setStage(Stage stage)
+	{
+		boolean hasChanged = false;
+		if (stage != this.stage)
+		{
+			hasChanged = true;
+		}
+		this.stage = stage;
+		if (hasChanged)
+		{
+			worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord, zCoord, worldObj.getBlock(xCoord, yCoord, zCoord));
+		}
+	}
+
 	@Override
 	public void updateEntity() {
 		super.updateEntity();
@@ -182,7 +201,7 @@ public class TileQuarry extends TileAbstractBuilder implements IHasWork, ISidedI
 
 		if (stage == Stage.DONE) {
 			if (mode == Mode.Loop) {
-				stage = Stage.IDLE;
+				this.setStage(Stage.IDLE);
 			} else {
 				return;
 			}
@@ -202,7 +221,7 @@ public class TileQuarry extends TileAbstractBuilder implements IHasWork, ISidedI
 			if (builder != null && !builder.isDone(this)) {
 				builder.buildNextSlot(worldObj, this, xCoord, yCoord, zCoord);
 			} else {
-				stage = Stage.IDLE;
+				this.setStage(Stage.IDLE);
 			}
 		} else if (stage == Stage.DIGGING) {
 			dig();
@@ -214,6 +233,7 @@ public class TileQuarry extends TileAbstractBuilder implements IHasWork, ISidedI
 			return;
 		} else if (stage == Stage.MOVING) {
 			//int energyUsed = this.getBattery().useEnergy(20, (int) Math.ceil(20D + (double) getBattery().getEnergyStored() / 10), false);
+
 
 			if (getBattery().isStagePowered(0))
 			{
@@ -251,7 +271,7 @@ public class TileQuarry extends TileAbstractBuilder implements IHasWork, ISidedI
 
 		if (miner == null) {
 			// Hmm. Probably shouldn't be mining if there's no miner.
-			stage = Stage.IDLE;
+			this.setStage(Stage.IDLE);
 			return;
 		}
 
@@ -281,9 +301,9 @@ public class TileQuarry extends TileAbstractBuilder implements IHasWork, ISidedI
 
 			if (!findFrame()) {
 				initializeBlueprintBuilder();
-				stage = Stage.BUILDING;
+				this.setStage(Stage.BUILDING);
 			} else {
-				stage = Stage.IDLE;
+				this.setStage(Stage.IDLE);
 			}
 		}
 	}
@@ -308,9 +328,9 @@ public class TileQuarry extends TileAbstractBuilder implements IHasWork, ISidedI
 				setTarget(box.xMin + 1, yCoord + 2, box.zMin + 1);
 			}
 
-			stage = Stage.DONE;
+			this.setStage(Stage.DONE);
 		} else {
-			stage = Stage.MOVING;
+			this.setStage(Stage.MOVING);
 		}
 
 		movingHorizontally = true;
@@ -493,9 +513,9 @@ public class TileQuarry extends TileAbstractBuilder implements IHasWork, ISidedI
 
 		if (isQuarriableBlock(targetX, targetY - 1, targetZ)) {
 			miner = new BlockMiner(worldObj, this, targetX, targetY - 1, targetZ);
-			stage = Stage.DIGGING;
+			this.setStage(Stage.DIGGING);
 		} else {
-			stage = Stage.IDLE;
+			this.setStage(Stage.IDLE);
 		}
 	}
 
@@ -640,7 +660,7 @@ public class TileQuarry extends TileAbstractBuilder implements IHasWork, ISidedI
 		if (bpt != null) {
 			builder = new BptBuilderBlueprint(bpt, worldObj, box.xMin, yCoord, box.zMin);
 			speed = 0;
-			stage = Stage.BUILDING;
+			this.setStage(Stage.BUILDING);
 			sendNetworkUpdate();
 		}
 	}
@@ -680,7 +700,7 @@ public class TileQuarry extends TileAbstractBuilder implements IHasWork, ISidedI
 		speed = stream.readFloat();
 		headTrajectory = stream.readFloat();
 		int flags = stream.readUnsignedByte();
-		stage = Stage.values()[flags & 0x07];
+		this.setStage(Stage.values()[flags & 0x07]);
 		movingHorizontally = (flags & 0x10) != 0;
 		movingVertically = (flags & 0x20) != 0;
 		int newLedState = stream.readUnsignedByte();

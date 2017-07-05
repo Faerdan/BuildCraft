@@ -97,6 +97,26 @@ public class BlockQuarry extends BlockHatched {
 	}
 
 	@Override
+	public boolean canConnectRedstone(IBlockAccess world, int x, int y, int z, int side) {
+		return true;
+	}
+
+	/**
+	 * Can this block provide power. Only wire currently seems to have this change based on its state.
+	 */
+	public boolean canProvidePower()
+	{
+		return true;
+	}
+
+	@Override
+	public int isProvidingWeakPower(IBlockAccess iblockaccess, int x, int y, int z, int l) {
+
+		TileQuarry tile = (TileQuarry) iblockaccess.getTileEntity(x, y, z);
+		return tile.isArmMoving() ? 15 : 0;
+	}
+
+	@Override
 	public boolean renderAsNormalBlock() {
 		return false;
 	}

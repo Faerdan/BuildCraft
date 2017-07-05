@@ -48,6 +48,7 @@ public abstract class TileBuildCraft extends TileEntity implements IShaftPowerIn
     private boolean init = false;
     private String owner = "[BuildCraft]";
     private ShaftPowerInputManager shaftPowerInputManager;
+    private boolean isPowerNetworkUpdatePending = false;
 
     public String getOwner() {
         return owner;
@@ -118,30 +119,41 @@ public abstract class TileBuildCraft extends TileEntity implements IShaftPowerIn
     public void writeData(ByteBuf stream) {
         if (shaftPowerInputManager != null)
         {
-            stream.writeInt(shaftPowerInputManager.getTorque());
-            stream.writeInt(shaftPowerInputManager.getOmega());
             stream.writeBoolean(shaftPowerInputManager.hasMismatchedInputs());
+            if (!shaftPowerInputManager.hasMismatchedInputs())
+            {
+                stream.writeInt(shaftPowerInputManager.getTorque());
+                stream.writeInt(shaftPowerInputManager.getOmega());
+            }
 
-            for (int stageIndex = 0; stageIndex < getStageCount(); stageIndex++)
+            /*for (int stageIndex = 0; stageIndex < getStageCount(); stageIndex++)
             {
                 stream.writeInt(getMinTorque(stageIndex));
                 stream.writeInt(getMinOmega(stageIndex));
                 stream.writeLong(getMinPower(stageIndex));
-            }
+            }*/
         }
     }
 
     public void readData(ByteBuf stream) {
         if (shaftPowerInputManager != null)
         {
-            shaftPowerInputManager.setState(stream.readInt(), stream.readInt(), stream.readBoolean());
+            if (stream.readBoolean())
+            {
+                // Has mismatched inputs
+                shaftPowerInputManager.setState(0, 0, true);
+            }
+            else
+            {
+                shaftPowerInputManager.setState(stream.readInt(), stream.readInt(), false);
+            }
 
-            for (int stageIndex = 0; stageIndex < getStageCount(); stageIndex++)
+            /*for (int stageIndex = 0; stageIndex < getStageCount(); stageIndex++)
             {
                 shaftPowerInputManager.setMinTorque(stageIndex, stream.readInt());
                 shaftPowerInputManager.setMinOmega(stageIndex, stream.readInt());
                 shaftPowerInputManager.setMinPower(stageIndex, stream.readLong());
-            }
+            }*/
         }
     }
 
@@ -218,6 +230,7 @@ public abstract class TileBuildCraft extends TileEntity implements IShaftPowerIn
 
     @Override
     public void onPowerChange(ShaftPowerInputManager shaftPowerInputManager) {
+        isPowerNetworkUpdatePending = true;
         sendNetworkUpdate();
     }
 

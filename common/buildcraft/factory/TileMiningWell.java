@@ -100,7 +100,7 @@ public class TileMiningWell extends TileBuildCraft implements IHasWork, IPipeCon
 			isDigging = true;
 			ticksSinceAction = 0;
 
-			miner.acceptEnergy(getBattery().getTorque());
+			miner.acceptEnergy(getBattery().getTorque() / 4);
 
 			if (miner.hasFailed()) {
 				isDigging = false;

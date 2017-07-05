@@ -82,7 +82,7 @@ public class BlockMiner {
 
 		energyRequired = BlockUtils.computeBlockBreakEnergy(world, x, y, z);
 
-		BCLog.logger.info("quarry energyRequired: " + energyRequired + ", provided: " + offeredAmount);
+		//BCLog.logger.info("quarry energyRequired: " + energyRequired + ", provided: " + offeredAmount);
 
 		int usedAmount = MathUtils.clamp(offeredAmount, 0, Math.max(0, energyRequired - energyAccepted));
 		energyAccepted += usedAmount;

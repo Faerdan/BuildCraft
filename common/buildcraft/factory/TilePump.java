@@ -416,7 +416,7 @@ public class TilePump extends TileBuildCraft implements IHasWork, IFluidHandler,
 
 	@Override
 	public void readData(ByteBuf stream) {
-		super.writeData(stream);
+		super.readData(stream);
 		aimY = stream.readShort();
 		tubeY = stream.readFloat();
 		powered = stream.readBoolean();
