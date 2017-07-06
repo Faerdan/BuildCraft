@@ -119,8 +119,8 @@ public abstract class TileBuildCraft extends TileEntity implements IShaftPowerIn
     public void writeData(ByteBuf stream) {
         if (shaftPowerInputManager != null)
         {
-            stream.writeBoolean(shaftPowerInputManager.hasMismatchedInputs());
-            if (!shaftPowerInputManager.hasMismatchedInputs())
+            stream.writeBoolean(shaftPowerInputManager.getPower() > 0);
+            if (shaftPowerInputManager.getPower() > 0)
             {
                 stream.writeInt(shaftPowerInputManager.getTorque());
                 stream.writeInt(shaftPowerInputManager.getOmega());
@@ -140,12 +140,11 @@ public abstract class TileBuildCraft extends TileEntity implements IShaftPowerIn
         {
             if (stream.readBoolean())
             {
-                // Has mismatched inputs
-                shaftPowerInputManager.setState(0, 0, true);
+                shaftPowerInputManager.setState(stream.readInt(), stream.readInt());
             }
             else
             {
-                shaftPowerInputManager.setState(stream.readInt(), stream.readInt(), false);
+                shaftPowerInputManager.setState(0, 0);
             }
 
             /*for (int stageIndex = 0; stageIndex < getStageCount(); stageIndex++)
@@ -257,11 +256,6 @@ public abstract class TileBuildCraft extends TileEntity implements IShaftPowerIn
     @Override
     public boolean canReadFrom(ForgeDirection forgeDirection) {
         return true;
-    }
-
-    @Override
-    public boolean hasMismatchedInputs() {
-        return shaftPowerInputManager != null && shaftPowerInputManager.hasMismatchedInputs();
     }
 
     @Override

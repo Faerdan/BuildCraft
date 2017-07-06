@@ -15,6 +15,7 @@ import java.util.Set;
 import Reika.RotaryCraft.API.Power.IShaftPowerInputCaller;
 import Reika.RotaryCraft.API.Power.PowerStage;
 import Reika.RotaryCraft.API.Power.ShaftPowerInputManager;
+import buildcraft.api.core.BCLog;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import io.netty.buffer.ByteBuf;
@@ -85,7 +86,7 @@ public class TileQuarry extends TileAbstractBuilder implements IHasWork, ISidedI
 	private int targetX, targetY, targetZ;
 	private double headPosX, headPosY, headPosZ;
 	private double speed = 0.03;
-	private Stage stage = Stage.BUILDING;
+	private Stage stage = null;
 	private boolean movingHorizontally;
 	private boolean movingVertically;
 	private float headTrajectory;
@@ -109,6 +110,7 @@ public class TileQuarry extends TileAbstractBuilder implements IHasWork, ISidedI
 	public TileQuarry() {
 		box.kind = Kind.STRIPES;
 		this.setBattery(new ShaftPowerInputManager(this, "quarry", 1, 1, 1));
+		this.setStage(Stage.BUILDING);
 	}
 
 	public void createUtilsIfNeeded() {
@@ -181,9 +183,13 @@ public class TileQuarry extends TileAbstractBuilder implements IHasWork, ISidedI
 			hasChanged = true;
 		}
 		this.stage = stage;
-		if (hasChanged)
+		if (hasChanged && worldObj != null)
 		{
-			worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord, zCoord, worldObj.getBlock(xCoord, yCoord, zCoord));
+			Block block = worldObj.getBlock(xCoord, yCoord, zCoord);
+			if (block != null)
+			{
+				worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord, zCoord, block);
+			}
 		}
 	}
 
@@ -199,19 +205,24 @@ public class TileQuarry extends TileAbstractBuilder implements IHasWork, ISidedI
 			return;
 		}
 
+		//BCLog.logger.info("TileQuarry updateEntity. Stage: " + stage.toString());
+
 		if (stage == Stage.DONE) {
 			if (mode == Mode.Loop) {
 				this.setStage(Stage.IDLE);
 			} else {
+				//BCLog.logger.info("TileQuarry stage is done but mode is not loop! Stage: " + stage.toString());
 				return;
 			}
 		}
 
 		if (!areChunksLoaded()) {
+			//BCLog.logger.info("TileQuarry chunks are not loaded! Stage: " + stage.toString());
 			return;
 		}
 
 		if (mode == Mode.Off && stage != Stage.MOVING) {
+			//BCLog.logger.info("TileQuarry mode == Mode.Off && stage != Stage.MOVING! Stage: " + stage.toString());
 			return;
 		}
 
@@ -219,13 +230,17 @@ public class TileQuarry extends TileAbstractBuilder implements IHasWork, ISidedI
 
 		if (stage == Stage.BUILDING) {
 			if (builder != null && !builder.isDone(this)) {
+				//BCLog.logger.info(String.format("TileQuarry builder.buildNextSlot at %s %s %s. Stage: %s", xCoord, yCoord, zCoord, stage));
 				builder.buildNextSlot(worldObj, this, xCoord, yCoord, zCoord);
 			} else {
+				//BCLog.logger.info(String.format("TileQuarry no builder or builder is done. Stage: %s", stage));
 				this.setStage(Stage.IDLE);
 			}
 		} else if (stage == Stage.DIGGING) {
+			//BCLog.logger.info(String.format("TileQuarry is digging. Stage: %s", stage));
 			dig();
 		} else if (stage == Stage.IDLE) {
+			//BCLog.logger.info(String.format("TileQuarry is idling. Stage: %s", stage));
 			idling();
 
 			// We are sending a network packet update ONLY below.
@@ -237,6 +252,7 @@ public class TileQuarry extends TileAbstractBuilder implements IHasWork, ISidedI
 
 			if (getBattery().isStagePowered(0))
 			{
+				//BCLog.logger.info(String.format("TileQuarry is powered and moving. Stage: %s", stage));
 			//if (energyUsed >= 20) {
 
 				//speed = 0.1 + energyUsed / 2000F;
@@ -255,6 +271,7 @@ public class TileQuarry extends TileAbstractBuilder implements IHasWork, ISidedI
 
 				moveHead(speed);
 			} else {
+				//BCLog.logger.info(String.format("TileQuarry is trying to move, but is not powered! Stage: %s", stage));
 				speed = 0;
 			}
 		}
@@ -300,6 +317,7 @@ public class TileQuarry extends TileAbstractBuilder implements IHasWork, ISidedI
 			miner = null;
 
 			if (!findFrame()) {
+				//BCLog.logger.info(String.format("TileQuarry is digging and could not find frame! Stage: %s", stage));
 				initializeBlueprintBuilder();
 				this.setStage(Stage.BUILDING);
 			} else {
@@ -323,7 +341,8 @@ public class TileQuarry extends TileAbstractBuilder implements IHasWork, ISidedI
 
 	protected void idling() {
 		if (!findTarget(true)) {
-			// I believe the issue is box going null becuase of bad chunkloader positioning
+			//BCLog.logger.info(String.format("TileQuarry is idling and could not find target! Stage: %s", stage));
+			// I believe the issue is box going null because of bad chunkloader positioning
 			if (arm != null && box != null) {
 				setTarget(box.xMin + 1, yCoord + 2, box.zMin + 1);
 			}
@@ -662,6 +681,11 @@ public class TileQuarry extends TileAbstractBuilder implements IHasWork, ISidedI
 			speed = 0;
 			this.setStage(Stage.BUILDING);
 			sendNetworkUpdate();
+			//BCLog.logger.info(String.format("TileQuarry builder bpt is not null, is builder: %s", builder));
+		}
+		else
+		{
+			//BCLog.logger.info(String.format("TileQuarry builder bpt is null, is FillerPattern: %s", ((FillerPattern) FillerManager.registry.getPattern("buildcraft:frame"))));
 		}
 	}
 

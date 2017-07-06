@@ -331,6 +331,7 @@ public class BptBuilderBlueprint extends BptBuilderBase {
 	}
 
 	protected boolean readyForSlotLookup(TileAbstractBuilder builder) {
+		//BCLog.logger.info(String.format("BptBuilderBlueprint readyForSlotLookup: (builder %s || isStagePowered %s, getMinTorque %s) %s", builder, builder.getBattery().isStagePowered(0), builder.getBattery().getMinTorque(0), (builder == null || builder.getBattery().isStagePowered(0))));
 		return builder == null || builder.getBattery().isStagePowered(0);//builder.energyAvailable() >= BuilderAPI.BREAK_ENERGY;
 	}
 
@@ -525,7 +526,8 @@ public class BptBuilderBlueprint extends BptBuilderBase {
 				stacksUsed.add(s);
 			}
 
-			return !builder.getBattery().isStagePowered(0);//(builder.energyAvailable() < slot.getEnergyRequirement(stacksUsed));
+			//BCLog.logger.info(String.format("BptBuilderBlueprint checkRequirements CREATIVE return %s (minTorque %s)", !builder.getBattery().isStagePowered(0), builder.getBattery().getMinTorque(0)));
+			return builder.getBattery().isStagePowered(0);//(builder.energyAvailable() < slot.getEnergyRequirement(stacksUsed));
 		}
 
 		IInventory invCopy = new InventoryCopy(builder);
@@ -571,6 +573,7 @@ public class BptBuilderBlueprint extends BptBuilderBase {
 			}
 		}
 
+		//BCLog.logger.info(String.format("BptBuilderBlueprint checkRequirements CREATIVE return %s (minTorque %s)", builder.getBattery().isStagePowered(0), builder.getBattery().getMinTorque(0)));
 		return builder.getBattery().isStagePowered(0);//builder.energyAvailable() >= slot.getEnergyRequirement(stacksUsed);
 	}
 

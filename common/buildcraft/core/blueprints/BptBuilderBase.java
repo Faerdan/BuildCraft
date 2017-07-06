@@ -103,15 +103,19 @@ public abstract class BptBuilderBase implements IAreaProvider {
 		initialize();
 
 		if (world.getTotalWorldTime() < nextBuildDate) {
+			//BCLog.logger.info(String.format("BptBuilderBase it is not yet nextBuildDate! %s / %s", nextBuildDate, world.getTotalWorldTime()));
 			return false;
 		}
 
 		BuildingSlot slot = getNextBlock(world, builder);
 
 		if (buildSlot(world, builder, slot, x + 0.5F, y + 0.5F, z + 0.5F)) {
+			//BCLog.logger.info(String.format("BptBuilderBase successfully built at! %s %s %s", x + 0.5F, y + 0.5F, z + 0.5F));
+
 			nextBuildDate = world.getTotalWorldTime() + slot.buildTime();
 			return true;
 		} else {
+			//BCLog.logger.info(String.format("BptBuilderBase failed to build! %s / %s", nextBuildDate, world.getTotalWorldTime()));
 			return false;
 		}
 	}
@@ -132,6 +136,8 @@ public abstract class BptBuilderBase implements IAreaProvider {
 
 			return true;
 		}
+
+		//BCLog.logger.info(String.format("BptBuilderBase slot is null! %s / %s", nextBuildDate, world.getTotalWorldTime()));
 
 		return false;
 	}
