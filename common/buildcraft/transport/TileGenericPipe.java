@@ -10,6 +10,9 @@ package buildcraft.transport;
 
 import java.util.List;
 
+import Reika.RotaryCraft.Auxiliary.Interfaces.PipeConnector;
+import Reika.RotaryCraft.Base.TileEntity.RotaryCraftTileEntity;
+import Reika.RotaryCraft.Base.TileEntity.TileEntityPiping;
 import org.apache.logging.log4j.Level;
 import io.netty.buffer.ByteBuf;
 
@@ -719,6 +722,13 @@ public class TileGenericPipe extends TileEntity implements IFluidHandler,
 				IPipeConnection.ConnectOverride override = ((IPipeConnection) with).overridePipeConnection(pipe.transport.getPipeType(), side.getOpposite());
 				if (override != IPipeConnection.ConnectOverride.DEFAULT) {
 					return override == IPipeConnection.ConnectOverride.CONNECT;
+				}
+			}
+			else if (with instanceof RotaryCraftTileEntity && with instanceof PipeConnector) {
+				PipeConnector pc = (PipeConnector)with;
+				TileEntityPiping.Flow flow = pc.getFlowForSide(side); // .getOpposite() ???
+				if (!flow.canIntake && !flow.canOutput) {
+					return false;
 				}
 			}
 		}
