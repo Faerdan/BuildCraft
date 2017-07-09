@@ -13,6 +13,7 @@ import java.util.List;
 import Reika.RotaryCraft.Auxiliary.Interfaces.PipeConnector;
 import Reika.RotaryCraft.Base.TileEntity.RotaryCraftTileEntity;
 import Reika.RotaryCraft.Base.TileEntity.TileEntityPiping;
+import Reika.RotaryCraft.Registry.MachineRegistry;
 import org.apache.logging.log4j.Level;
 import io.netty.buffer.ByteBuf;
 
@@ -259,6 +260,39 @@ public class TileGenericPipe extends TileEntity implements IFluidHandler,
 	}
 
 	public TileGenericPipe() {
+	}
+
+	public final int getPressure(ForgeDirection side) {
+		if (pipe.transport.getPipeType() != PipeType.FLUID)
+		{
+			return 0;
+		}
+		int pressure = 101300;
+		PipeTransportFluids fluidTransport = (PipeTransportFluids)pipe.transport;
+		if (fluidTransport == null)
+		{
+			//BCLog.logger.info(String.format("Pipe.getPressure at %s %s %s fluidTransport is null", xCoord, yCoord, zCoord));
+			return pressure;
+		}
+
+		Fluid fluid = fluidTransport.fluidType != null ? fluidTransport.fluidType.getFluid() : null;
+		if (fluid == null)
+		{
+			//BCLog.logger.info(String.format("Pipe.getPressure at %s %s %s fluidType is null", xCoord, yCoord, zCoord));
+			return pressure;
+		}
+
+		int amount = fluidTransport.sections[side.ordinal()].amount;
+		if (amount <= 0)
+		{
+			//BCLog.logger.info(String.format("Pipe.getPressure at %s %s %s amount is zero", xCoord, yCoord, zCoord));
+			return pressure;
+		}
+		//p = rho*R*T approximation
+		if (fluid.isGaseous())
+			return pressure+(128*(int)(amount/1000D*fluid.getTemperature()*Math.abs(fluid.getDensity())/1000D));
+		else
+			return pressure+amount*24;
 	}
 
 	@Override
@@ -722,13 +756,6 @@ public class TileGenericPipe extends TileEntity implements IFluidHandler,
 				IPipeConnection.ConnectOverride override = ((IPipeConnection) with).overridePipeConnection(pipe.transport.getPipeType(), side.getOpposite());
 				if (override != IPipeConnection.ConnectOverride.DEFAULT) {
 					return override == IPipeConnection.ConnectOverride.CONNECT;
-				}
-			}
-			else if (with instanceof RotaryCraftTileEntity && with instanceof PipeConnector) {
-				PipeConnector pc = (PipeConnector)with;
-				TileEntityPiping.Flow flow = pc.getFlowForSide(side); // .getOpposite() ???
-				if (!flow.canIntake && !flow.canOutput) {
-					return false;
 				}
 			}
 		}

@@ -6,6 +6,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import Reika.RotaryCraft.Auxiliary.Interfaces.PipeConnector;
+import Reika.RotaryCraft.Base.TileEntity.TileEntityPiping;
+import Reika.RotaryCraft.Registry.MachineRegistry;
+import buildcraft.api.core.BCLog;
 import com.google.common.collect.EnumMultiset;
 import com.google.common.collect.Multiset;
 
@@ -220,6 +224,20 @@ public class PipeTransportFluids extends PipeTransport implements IFluidHandler,
 			}
 		}
 
+		if (tile instanceof PipeConnector)
+		{
+			TileEntityPiping.Flow flow = ((PipeConnector)tile).getFlowForSide(o.getOpposite());
+			if (flow == TileEntityPiping.Flow.INPUT)
+			{
+				return true;
+			}
+			else
+			{
+				//BCLog.logger.info(String.format("PipeTransportFluids: Cannot output to PipeConnector at %s %s %s!", tile.xCoord, tile.yCoord, tile.zCoord));
+				return false;
+			}
+		}
+
 		if (tile instanceof IFluidHandler) {
 			return true;
 		}
@@ -260,30 +278,63 @@ public class PipeTransportFluids extends PipeTransport implements IFluidHandler,
 				moveToCenter();
 			}
 		} else {
+			moveFromPipe(0);
 			computeTTLs();
 		}
 	}
 
 	private void moveFromPipe(int outputCount) {
 		// Move liquid from the non-center to the connected output blocks
-		if (outputCount > 0) {
-			for (ForgeDirection o : directions) {
-				if (transferState[o.ordinal()] == TransferState.Output) {
-					TileEntity target = this.container.getTile(o);
-					if (!(target instanceof IFluidHandler)) {
-						continue;
-					}
+		boolean doOutput;
+		PipeConnector pc;
+		for (ForgeDirection dir : directions) {
+			TileEntity target = this.container.getTile(dir);
 
-					PipeSection section = sections[o.ordinal()];
-					FluidStack liquidToPush = new FluidStack(fluidType, section.drain(flowRate, false));
+			doOutput = true;
+			pc = null;
+			if (target instanceof PipeConnector)
+			{
+				pc = (PipeConnector)target;
 
-					if (liquidToPush.amount > 0) {
-						int filled = ((IFluidHandler) target).fill(o.getOpposite(), liquidToPush, true);
-						if (filled <= 0) {
-							outputTTL[o.ordinal()]--;
-						} else {
-							section.drain(filled, true);
+				TileEntityPiping.Flow flow = pc.getFlowForSide(dir.getOpposite());
+				if (flow == TileEntityPiping.Flow.NONE)
+				{
+					doOutput = false;
+				}
+				if (flow == TileEntityPiping.Flow.OUTPUT) {
+					doOutput = false;
+					FluidStack extracted = pc.drain(dir.getOpposite(), getFlowRate(), false);
+					if (extracted != null) {
+						int insertedAmount = fill(dir, extracted, true);
+						if (insertedAmount > 0) {
+							pc.drain(dir.getOpposite(), insertedAmount, true);
 						}
+					}
+				}
+			}
+
+			if (outputCount > 0 && doOutput && transferState[dir.ordinal()] == TransferState.Output) {
+				if (pc == null && !(target instanceof IFluidHandler)) {
+					continue;
+				}
+
+				PipeSection section = sections[dir.ordinal()];
+				FluidStack liquidToPush = new FluidStack(fluidType, section.drain(flowRate, false));
+
+				if (liquidToPush.amount > 0) {
+					int filled;
+					if (pc != null)
+					{
+						filled = pc.fill(dir.getOpposite(), liquidToPush, true);
+					}
+					else
+					{
+						filled = ((IFluidHandler) target).fill(dir.getOpposite(), liquidToPush, true);
+					}
+					if (filled <= 0) {
+						outputTTL[dir.ordinal()]--;
+					} else {
+						section.drain(filled, true);
 					}
 				}
 			}
@@ -648,11 +699,19 @@ public class PipeTransportFluids extends PipeTransport implements IFluidHandler,
 			}
 		}
 
-		if (tile instanceof IFluidHandler) {
-			return true;
+		if (getPipeType() == IPipeTile.PipeType.FLUID && tile instanceof PipeConnector) {
+			PipeConnector pc = (PipeConnector)tile;
+			if (pc.canConnectToPipe(MachineRegistry.RESERVOIR) && pc.canConnectToPipeOnSide(MachineRegistry.RESERVOIR, side.getOpposite()))
+			{
+				return true;
+			}
+			else
+			{
+				//BCLog.logger.info(String.format("PipeTransportFluids: Cannot connect to PipeConnector at %s %s %s!", tile.xCoord, tile.yCoord, tile.zCoord));
+			}
 		}
 
-		return tile instanceof IPipeTile;
+		return tile instanceof IFluidHandler || tile instanceof IPipeTile;
 	}
 
 	@Override
