@@ -161,7 +161,7 @@ public class PipeTransportFluids extends PipeTransport implements IFluidHandler,
 	private final short[] outputCooldown = new short[]{0, 0, 0, 0, 0, 0};
 	private final boolean[] canReceiveCache = new boolean[6];
 	private int clientSyncCounter = 0;
-	private int capacity, flowRate;
+	private int capacity, flowRate, maxPressureFactor = 4;
 	private int travelDelay = MAX_TRAVEL_DELAY;
 
 	public enum TransferState {
@@ -701,14 +701,7 @@ public class PipeTransportFluids extends PipeTransport implements IFluidHandler,
 
 		if (getPipeType() == IPipeTile.PipeType.FLUID && tile instanceof PipeConnector) {
 			PipeConnector pc = (PipeConnector)tile;
-			if (pc.canConnectToPipe(MachineRegistry.RESERVOIR) && pc.canConnectToPipeOnSide(MachineRegistry.RESERVOIR, side.getOpposite()))
-			{
-				return true;
-			}
-			else
-			{
-				//BCLog.logger.info(String.format("PipeTransportFluids: Cannot connect to PipeConnector at %s %s %s!", tile.xCoord, tile.yCoord, tile.zCoord));
-			}
+			return (pc.canConnectToPipe(MachineRegistry.RESERVOIR) && pc.canConnectToPipeOnSide(MachineRegistry.RESERVOIR, side.getOpposite()));
 		}
 
 		return tile instanceof IFluidHandler || tile instanceof IPipeTile;
