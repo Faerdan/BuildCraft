@@ -53,7 +53,7 @@ public class TileLaser extends TileBuildCraft implements IHasWork, IControllable
 	public TileLaser() {
 		super();
 		//this.setBattery(new RFBattery(10000, 250, 0));
-		this.setBattery(new ShaftPowerInputManager(this, "laser", 1, 16384, 16384));
+		this.setBattery(new ShaftPowerInputManager(this, "laser", 1, 1, 131072));
 	}
 
 	@Override
