@@ -113,7 +113,7 @@ public class TilePump extends TileBuildCraft implements IHasWork, IFluidHandler,
 
 		tick++;
 
-		if (tick % 16 != 0) {
+		if (tick % 10 != 0) {
 			return;
 		}
 
@@ -127,11 +127,10 @@ public class TilePump extends TileBuildCraft implements IHasWork, IFluidHandler,
 					if (fluidToPump.getFluid() == FluidRegistry.getFluid("oil"))
 					{
 						//BCLog.logger.info("TilePump: Found oil at " + index.x + ", " + index.y + ", " + index.z + ".");
-						Block nextBlock = worldObj.getBlock(index.x, index.y - 1, index.z);
-						if (nextBlock instanceof BlockSpring)
+						if (worldObj.getBlock(index.x, index.y - 1, index.z) instanceof BlockSpring)
 						{
 							//BCLog.logger.info("TilePump: Found BlockSpring at " + index.x + ", " + (index.y - 1) + ", " + index.z + ".");
-							fluidToPump.amount *= 0.05;
+							fluidToPump.amount = 50;
 						}
 						else
 						{
