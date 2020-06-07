@@ -1,0 +1,92 @@
+# sv_SE
+# Initially translated by Landrash
+# Fixes and updates by Hugsim
+# Fix by Maxnordlund
+# this translation is very old, contributor, please update !
+# Fixed errored characters by Mercalus
+
+gui.building.resources=Byggmaterial 
+gui.del=Radera
+gui.filling.resources=Fyllningsmaterial 
+gui.inventory=Utrustning
+gui.lock=Lås
+gui.needed=Behövs
+gui.unlock=Lås upp
+gui.energy=Energi
+gui.currentOutput=Nuvarande utmatning
+gui.stored=Lagrad
+gui.heat=Värme
+gui.assemblyRate=Energitakt
+gui.assemblyCurrentRequired=Energi som behös
+gui.clickcraft=-=Klicka fö att skapa=-
+
+item.bucketFuel.name=Bränslehink
+item.bucketOil.name=Oljahink
+item.woodenGearItem.name=Träkugghjul
+item.stoneGearItem.name=Stenkugghjul
+item.ironGearItem.name=Järn Växel 
+item.goldGearItem.name=Guld Växel
+item.diamondGearItem.name=Diamant Växel
+item.templateItem.name=Mall
+item.wrenchItem.name=Skiftnyckel
+item.pipeWaterproof.name=Vätska Rörstätning
+item.redPipeWire.name=Röd Rörledning
+item.bluePipeWire.name=Blå Rörledning
+item.greenPipeWire.name=Grön Rörledning
+item.yellowPipeWire.name=Gul Rörledning
+item.blueprintItem.name=Ritning
+item.PipeItemsWood.name=Trä Transportrör
+item.PipeItemsCobblestone.name=Kullersten Transportrör
+item.PipeItemsStone.name=Sten Transportrör
+item.pipeItemsQuartz.name=Kvarts Transportrör
+item.PipeItemsIron.name=Järn Transportör
+item.PipeItemsGold.name=Guld Transportrör
+item.PipeItemsDiamond.name=Diamant Transportrör
+item.PipeItemsObsidian.name=Obsidian Transportrör
+item.PipeItemsEmerald.name=Smaragd Transportrör
+item.PipeFluidsWood.name=Vätska Trärör
+item.PipeFluidsCobblestone.name=Vätska Kullerstenrör
+item.PipeFluidsStone.name=Vätska Stenrör
+item.PipeFluidsIron.name=Vätska Järnrör
+item.PipeFluidsGold.name=Vätska Guldrör
+item.PipeFluidsEmerald.name=Vätska Smaragdrör
+item.PipePowerWood.name=Konduktivt Trärör
+item.PipePowerCobblestone.name=Konduktivt Kullerstenrör
+item.PipePowerStone.name=Konduktivt Stenrör
+item.PipePowerQuartz.name=Konduktivt Kvartsrör
+item.PipePowerGold.name=Konduktivt Guldrör
+item.PipePowerDiamond.name=Konduktivt Diamantrör
+item.PipeItemsStripes.name=Randigt Transportrör
+item.PipeStructureCobblestone.name=Kullersten Strukturrör
+item.PipeItemsVoid.name=Annullerings Transportrör
+item.PipeFluidsVoid.name=Vätska Annullerings Transportrör
+item.PipeItemsSandstone.name=Sandsten Transportrör
+item.PipeFluidsSandstone.name=Vätska Sandstensrör
+item.Facade.name=Fasad
+item.PipePlug.name=Rör Plugg
+
+tile.architectBlock.name=Arkitektbord
+tile.assemblyTableBlock.name=Monteringsbänk
+tile.assemblyWorkbenchBlock.name=Avancerad Arbetsbänk
+tile.autoWorkbenchBlock.name=Automatisk Arbetsbänk
+tile.blockFuel.name=Bränsle
+tile.blockHopper.name=Ränna
+tile.blockOil.name=Olja
+tile.builderBlock.name=Byggare
+tile.engineIron.name=Förbränningsmotor
+tile.engineStone.name=Stirlingmotor
+tile.engineWood.name=Rödstensmotor
+tile.fillerBlock.name=Fyllare
+tile.frameBlock.name=Ram
+tile.laserBlock.name=Laser
+tile.libraryBlock.name=Ritningsbibliotek
+tile.machineBlock.name=Stenbrott
+tile.markerBlock.name=Landmärke
+tile.miningWellBlock.name=Gruvborr 
+tile.pathMarkerBlock.name=Vägmarkör
+tile.plainPipeBlock.name=Gruvrör
+tile.pumpBlock.name=Pump
+tile.refineryBlock.name=Raffinaderi
+tile.spring.oil.name=Oljekälla
+tile.spring.water.name=Vattenkälla
+tile.tankBlock.name=Tank
