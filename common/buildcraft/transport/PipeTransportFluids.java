@@ -701,7 +701,7 @@ public class PipeTransportFluids extends PipeTransport implements IFluidHandler,
 
 		if (getPipeType() == IPipeTile.PipeType.FLUID && tile instanceof PipeConnector) {
 			PipeConnector pc = (PipeConnector)tile;
-			return (pc.canConnectToPipe(MachineRegistry.RESERVOIR) && pc.canConnectToPipeOnSide(MachineRegistry.RESERVOIR, side.getOpposite()));
+			return (pc.canConnectToPipe(MachineRegistry.BCFLUIDPIPE) && pc.canConnectToPipeOnSide(MachineRegistry.BCFLUIDPIPE, side.getOpposite()));
 		}
 
 		return tile instanceof IFluidHandler || tile instanceof IPipeTile;
