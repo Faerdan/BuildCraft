@@ -31,7 +31,7 @@ import buildcraft.core.lib.fluids.TankManager;
 import buildcraft.core.lib.utils.BlockUtils;
 
 public class TileTank extends TileBuildCraft implements IFluidHandler {
-	public final Tank tank = new Tank("tank", FluidContainerRegistry.BUCKET_VOLUME * 16, this);
+	public final Tank tank = new Tank("tank", FluidContainerRegistry.BUCKET_VOLUME * 12, this);
 	public final TankManager<Tank> tankManager = new TankManager<Tank>(tank);
 	public boolean hasUpdate = false;
 	public boolean hasNetworkUpdate = false;
