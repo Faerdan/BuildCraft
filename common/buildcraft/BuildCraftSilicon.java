@@ -141,8 +141,8 @@ public class BuildCraftSilicon extends BuildCraftMod {
 
 		BuilderAPI.schematicRegistry.registerSchematicBlock(laserBlock, SchematicRotateMeta.class, new int[]{2, 5, 3, 4}, true);
 
-		timeForSomeLogicAchievement = BuildCraftCore.achievementManager.registerAchievement(new Achievement("achievement.timeForSomeLogic", "timeForSomeLogicAchievement", 9, -2, assemblyTableBlock, BuildCraftCore.diamondGearAchievement));
-		tinglyLaserAchievement = BuildCraftCore.achievementManager.registerAchievement(new Achievement("achievement.tinglyLaser", "tinglyLaserAchievement", 11, -2, laserBlock, timeForSomeLogicAchievement));
+		//timeForSomeLogicAchievement = BuildCraftCore.achievementManager.registerAchievement(new Achievement("achievement.timeForSomeLogic", "timeForSomeLogicAchievement", 9, -2, assemblyTableBlock, BuildCraftCore.diamondGearAchievement));
+		//tinglyLaserAchievement = BuildCraftCore.achievementManager.registerAchievement(new Achievement("achievement.tinglyLaser", "tinglyLaserAchievement", 11, -2, laserBlock, timeForSomeLogicAchievement));
 
 		if (BuildCraftCore.loadDefaultRecipes) {
 			loadRecipes();

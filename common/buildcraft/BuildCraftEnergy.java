@@ -102,8 +102,8 @@ public class BuildCraftEnergy extends BuildCraftMod {
 	public static Item bucketRedPlasma;
 	public static Item fuel;
 
-	public static Achievement engineAchievement2;
-	public static Achievement engineAchievement3;
+	//public static Achievement engineAchievement2;
+	//public static Achievement engineAchievement3;
 
 	public static boolean canOilBurn;
 	public static boolean isOilDense;
@@ -393,8 +393,8 @@ public class BuildCraftEnergy extends BuildCraftMod {
 		EnergyProxy.proxy.registerBlockRenderers();
 		EnergyProxy.proxy.registerTileEntities();
 
-		engineAchievement2 = BuildCraftCore.achievementManager.registerAchievement(new Achievement("achievement.stirlingEngine", "engineAchievement2", 3, -2, new ItemStack(BuildCraftCore.engineBlock, 1, 1), BuildCraftCore.engineRedstoneAchievement));
-		engineAchievement3 = BuildCraftCore.achievementManager.registerAchievement(new Achievement("achievement.combustionEngine", "engineAchievement3", 5, -2, new ItemStack(BuildCraftCore.engineBlock, 1, 2), engineAchievement2));
+		//engineAchievement2 = BuildCraftCore.achievementManager.registerAchievement(new Achievement("achievement.stirlingEngine", "engineAchievement2", 3, -2, new ItemStack(BuildCraftCore.engineBlock, 1, 1), BuildCraftCore.engineRedstoneAchievement));
+		//engineAchievement3 = BuildCraftCore.achievementManager.registerAchievement(new Achievement("achievement.combustionEngine", "engineAchievement3", 5, -2, new ItemStack(BuildCraftCore.engineBlock, 1, 2), engineAchievement2));
 	}
 
 	@Mod.EventHandler

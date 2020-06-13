@@ -83,9 +83,9 @@ public class BuildCraftFactory extends BuildCraftMod {
 	public static BlockRefinery refineryBlock;
 	public static BlockHopper hopperBlock;
 
-	public static Achievement aLotOfCraftingAchievement;
-	public static Achievement straightDownAchievement;
-	public static Achievement refineAndRedefineAchievement;
+	//public static Achievement aLotOfCraftingAchievement;
+	//public static Achievement straightDownAchievement;
+	//public static Achievement refineAndRedefineAchievement;
 
 	public static int miningDepth = 256;
 	public static boolean pumpsNeedRealPower = false;
@@ -114,9 +114,9 @@ public class BuildCraftFactory extends BuildCraftMod {
 		BuilderAPI.schematicRegistry.registerSchematicBlock(hopperBlock, SchematicTile.class);
 		BuilderAPI.schematicRegistry.registerSchematicBlock(plainPipeBlock, SchematicFree.class);
 
-		aLotOfCraftingAchievement = BuildCraftCore.achievementManager.registerAchievement(new Achievement("achievement.aLotOfCrafting", "aLotOfCraftingAchievement", 1, 2, autoWorkbenchBlock, BuildCraftCore.woodenGearAchievement));
-		straightDownAchievement = BuildCraftCore.achievementManager.registerAchievement(new Achievement("achievement.straightDown", "straightDownAchievement", 5, 2, miningWellBlock, BuildCraftCore.ironGearAchievement));
-		refineAndRedefineAchievement = BuildCraftCore.achievementManager.registerAchievement(new Achievement("achievement.refineAndRedefine", "refineAndRedefineAchievement", 10, 0, refineryBlock, BuildCraftCore.diamondGearAchievement));
+		//aLotOfCraftingAchievement = BuildCraftCore.achievementManager.registerAchievement(new Achievement("achievement.aLotOfCrafting", "aLotOfCraftingAchievement", 1, 2, autoWorkbenchBlock, BuildCraftCore.woodenGearAchievement));
+		//straightDownAchievement = BuildCraftCore.achievementManager.registerAchievement(new Achievement("achievement.straightDown", "straightDownAchievement", 5, 2, miningWellBlock, BuildCraftCore.ironGearAchievement));
+		//refineAndRedefineAchievement = BuildCraftCore.achievementManager.registerAchievement(new Achievement("achievement.refineAndRedefine", "refineAndRedefineAchievement", 10, 0, refineryBlock, BuildCraftCore.diamondGearAchievement));
 
 		if (BuildCraftCore.loadDefaultRecipes) {
 			loadRecipes();

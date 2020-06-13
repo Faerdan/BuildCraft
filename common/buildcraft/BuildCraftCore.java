@@ -207,11 +207,11 @@ public class BuildCraftCore extends BuildCraftMod {
 	public static BlockPathMarker pathMarkerBlock;
 	public static Block springBlock;
 	public static BlockBuildTool buildToolBlock;
-	public static Item woodenGearItem;
+	/*public static Item woodenGearItem;
 	public static Item stoneGearItem;
-	public static Item ironGearItem;
+	public static Item ironGearItem;*/
 	public static Item goldGearItem;
-	public static Item diamondGearItem;
+	//public static Item diamondGearItem;
 	public static Item wrenchItem;
 	public static Item mapLocationItem;
 	public static Item debuggerItem;
@@ -261,13 +261,13 @@ public class BuildCraftCore extends BuildCraftMod {
 
 	public static AchievementManager achievementManager;
 
-	public static Achievement woodenGearAchievement;
+	/*public static Achievement woodenGearAchievement;
 	public static Achievement stoneGearAchievement;
 	public static Achievement ironGearAchievement;
 	public static Achievement goldGearAchievement;
 	public static Achievement diamondGearAchievement;
 	public static Achievement wrenchAchievement;
-	public static Achievement engineRedstoneAchievement;
+	public static Achievement engineRedstoneAchievement;*/
 
 	public static GameProfile gameProfile = new GameProfile(UUID.nameUUIDFromBytes("buildcraft.core".getBytes()), "[BuildCraft]");
 
@@ -343,7 +343,7 @@ public class BuildCraftCore extends BuildCraftMod {
 		springBlock = new BlockSpring().setBlockName("eternalSpring");
 		BCRegistry.INSTANCE.registerBlock(springBlock, ItemSpring.class, false);
 
-		woodenGearItem = (new ItemGear()).setUnlocalizedName("woodenGearItem");
+		/*woodenGearItem = (new ItemGear()).setUnlocalizedName("woodenGearItem");
 		if (BCRegistry.INSTANCE.registerItem(woodenGearItem, false)) {
 			OreDictionary.registerOre("gearWood", new ItemStack(woodenGearItem));
 		}
@@ -356,17 +356,17 @@ public class BuildCraftCore extends BuildCraftMod {
 		ironGearItem = (new ItemGear()).setUnlocalizedName("ironGearItem");
 		if (BCRegistry.INSTANCE.registerItem(ironGearItem, false)) {
 			OreDictionary.registerOre("gearIron", new ItemStack(ironGearItem));
-		}
+		}*/
 
 		goldGearItem = (new ItemGear()).setUnlocalizedName("goldGearItem");
 		if (BCRegistry.INSTANCE.registerItem(goldGearItem, false)) {
 			OreDictionary.registerOre("gearGold", new ItemStack(goldGearItem));
 		}
 
-		diamondGearItem = (new ItemGear()).setUnlocalizedName("diamondGearItem");
+		/*diamondGearItem = (new ItemGear()).setUnlocalizedName("diamondGearItem");
 		if (BCRegistry.INSTANCE.registerItem(diamondGearItem, false)) {
 			OreDictionary.registerOre("gearDiamond", new ItemStack(diamondGearItem));
-		}
+		}*/
 
 		paintbrushItem = (new ItemPaintbrush()).setUnlocalizedName("paintbrush");
 		BCRegistry.INSTANCE.registerItem(paintbrushItem, false);
@@ -414,13 +414,13 @@ public class BuildCraftCore extends BuildCraftMod {
 		achievementManager = new AchievementManager("BuildCraft");
 		FMLCommonHandler.instance().bus().register(achievementManager);
 
-		woodenGearAchievement = achievementManager.registerAchievement(new Achievement("achievement.woodenGear", "woodenGearAchievement", 0, 0, woodenGearItem, null));
-		stoneGearAchievement = achievementManager.registerAchievement(new Achievement("achievement.stoneGear", "stoneGearAchievement", 2, 0, stoneGearItem, woodenGearAchievement));
-		ironGearAchievement = achievementManager.registerAchievement(new Achievement("achievement.ironGear", "ironGearAchievement", 4, 0, ironGearItem, stoneGearAchievement));
-		goldGearAchievement = achievementManager.registerAchievement(new Achievement("achievement.goldGear", "goldGearAchievement", 6, 0, goldGearItem, ironGearAchievement));
-		diamondGearAchievement = achievementManager.registerAchievement(new Achievement("achievement.diamondGear", "diamondGearAchievement", 8, 0, diamondGearItem, goldGearAchievement));
-		wrenchAchievement = achievementManager.registerAchievement(new Achievement("achievement.wrench", "wrenchAchievement", 3, 2, wrenchItem, stoneGearAchievement));
-		engineRedstoneAchievement = BuildCraftCore.achievementManager.registerAchievement(new Achievement("achievement.redstoneEngine", "engineAchievement1", 1, -2, new ItemStack(engineBlock, 1, 0), BuildCraftCore.woodenGearAchievement));
+		//woodenGearAchievement = achievementManager.registerAchievement(new Achievement("achievement.woodenGear", "woodenGearAchievement", 0, 0, woodenGearItem, null));
+		//stoneGearAchievement = achievementManager.registerAchievement(new Achievement("achievement.stoneGear", "stoneGearAchievement", 2, 0, stoneGearItem, woodenGearAchievement));
+		//ironGearAchievement = achievementManager.registerAchievement(new Achievement("achievement.ironGear", "ironGearAchievement", 4, 0, ironGearItem, stoneGearAchievement));
+		//goldGearAchievement = achievementManager.registerAchievement(new Achievement("achievement.goldGear", "goldGearAchievement", 6, 0, goldGearItem, ironGearAchievement));
+		//diamondGearAchievement = achievementManager.registerAchievement(new Achievement("achievement.diamondGear", "diamondGearAchievement", 8, 0, diamondGearItem, goldGearAchievement));
+		//wrenchAchievement = achievementManager.registerAchievement(new Achievement("achievement.wrench", "wrenchAchievement", 3, 2, wrenchItem, stoneGearAchievement));
+		//engineRedstoneAchievement = BuildCraftCore.achievementManager.registerAchievement(new Achievement("achievement.redstoneEngine", "engineAchievement1", 1, -2, new ItemStack(engineBlock, 1, 0), BuildCraftCore.woodenGearAchievement));
 
 		// BuildCraft 6.1.4 and below - migration only
 		StatementManager.registerParameterClass("buildcraft:stackTrigger", StatementParameterItemStack.class);
@@ -670,7 +670,8 @@ public class BuildCraftCore extends BuildCraftMod {
 
 	public void loadRecipes() {
 		BCRegistry.INSTANCE.addCraftingRecipe(new ItemStack(wrenchItem), "I I", " G ", " I ", 'I', "ingotIron", 'G', "gearStone");
-		BCRegistry.INSTANCE.addCraftingRecipe(new ItemStack(woodenGearItem), " S ", "S S",
+		// Disabling these gear in favor of RotaryCraft gears
+		/*BCRegistry.INSTANCE.addCraftingRecipe(new ItemStack(woodenGearItem), " S ", "S S",
 				" S ", 'S',
 				"stickWood");
 		BCRegistry.INSTANCE.addCraftingRecipe(new ItemStack(stoneGearItem), " I ", "IGI",
@@ -679,12 +680,12 @@ public class BuildCraftCore extends BuildCraftMod {
 				"gearWood");
 		BCRegistry.INSTANCE.addCraftingRecipe(new ItemStack(ironGearItem), " I ", "IGI",
 				" I ", 'I',
-				"ingotIron", 'G', "gearCopper");
+				"ingotIron", 'G', "gearCopper");*/
 		BCRegistry.INSTANCE.addCraftingRecipe(new ItemStack(goldGearItem), " I ", "IGI",
 				" I ", 'I',
 				"ingotGold", 'G', "gearIron");
-		BCRegistry.INSTANCE.addCraftingRecipe(
-				new ItemStack(diamondGearItem), " I ", "IGI", " I ", 'I', "gemDiamond", 'G', "gearGold");
+		/*BCRegistry.INSTANCE.addCraftingRecipe(
+				new ItemStack(diamondGearItem), " I ", "IGI", " I ", 'I', "gemDiamond", 'G', "gearGold");*/
 		BCRegistry.INSTANCE.addCraftingRecipe(new ItemStack(mapLocationItem), "ppp", "pYp", "ppp", 'p', Items.paper, 'Y', "dyeYellow");
 
 		BCRegistry.INSTANCE.addCraftingRecipe(new ItemStack(engineBlock, 1, 0),
