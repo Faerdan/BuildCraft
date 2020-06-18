@@ -23,8 +23,8 @@ public class AssemblyRecipeManager implements IAssemblyRecipeManager {
 	private Map<String, IFlexibleRecipe<ItemStack>> assemblyRecipes = new HashMap<String, IFlexibleRecipe<ItemStack>>();
 
 	@Override
-	public void addRecipe(String id, int energyCost, ItemStack output, Object... input) {
-		addRecipe(id, new FlexibleRecipe<ItemStack>(id, output, energyCost, 0, input));
+	public void addRecipe(String id, int energyCost, int minEnergyToProcess, ItemStack output, Object... input) {
+		addRecipe(id, new FlexibleRecipe<ItemStack>(id, output, energyCost, minEnergyToProcess,0, input));
 	}
 
 	@Override

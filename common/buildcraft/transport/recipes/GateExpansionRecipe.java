@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import Reika.DragonAPI.ModInteract.Power.ReikaRFHelper;
 import com.google.common.collect.BiMap;
 
 import net.minecraft.item.ItemStack;
@@ -28,7 +29,7 @@ public class GateExpansionRecipe extends IntegrationRecipeBC {
 	private static final BiMap<IGateExpansion, ItemStack> recipes = (BiMap<IGateExpansion, ItemStack>) GateExpansions.getRecipesForPostInit();
 
 	public GateExpansionRecipe() {
-		super(25000);
+		super(Math.round(25000 * ReikaRFHelper.JoulePerRF));
 	}
 
 	@Override

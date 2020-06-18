@@ -21,13 +21,13 @@ public class RecipeManager<T> implements IRecipeManager<T> {
 	private BiMap<String, IFlexibleRecipe<T>> recipes = HashBiMap.create();
 
 	@Override
-	public void addRecipe(String id, int energyCost, T output, Object... input) {
-		addRecipe(id, energyCost, 0, output, input);
+	public void addRecipe(String id, int energyCost, int minEnergyToProcess, T output, Object... input) {
+		addRecipe(id, energyCost, minEnergyToProcess,0, output, input);
 	}
 
 	@Override
-	public void addRecipe(String id, int energyCost, int craftingDelay, T output, Object... input) {
-		recipes.put(id, new FlexibleRecipe<T>(id, output, energyCost, craftingDelay, input));
+	public void addRecipe(String id, int energyCost, int minEnergyToProcess, int craftingDelay, T output, Object... input) {
+		recipes.put(id, new FlexibleRecipe<T>(id, output, energyCost, minEnergyToProcess, 0, craftingDelay, input));
 	}
 
 	@Override

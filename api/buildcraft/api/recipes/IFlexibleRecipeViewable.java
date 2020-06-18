@@ -32,4 +32,6 @@ public interface IFlexibleRecipeViewable {
 	long getCraftingTime();
 	
 	int getEnergyCost();
+
+	int getMinEnergyToProcess();
 }

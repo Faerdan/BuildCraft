@@ -8,6 +8,7 @@
  */
 package buildcraft.silicon.gui;
 
+import Reika.RotaryCraft.Auxiliary.RotaryAux;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -48,19 +49,18 @@ public abstract class GuiLaserTable extends GuiBuildCraft {
 				return;
 			}
 
+			fontRendererObj.drawStringWithShadow(StringUtils.localize("gui.assemblyRate") + ":", x + 22, y + 68, subheaderColour);
+			fontRendererObj.drawString(String.format("%s / %s", RotaryAux.formatPower(table.getRecentEnergyAverage() / 100), RotaryAux.formatPower(table.getMinEnergyToProcess())), x + 22, y + 80, textColour);
 			fontRendererObj.drawStringWithShadow(StringUtils.localize("gui.energy"), x + 22, y + 8, headerColour);
 			fontRendererObj.drawStringWithShadow(StringUtils.localize("gui.assemblyCurrentRequired") + ":", x + 22, y + 20, subheaderColour);
-			fontRendererObj.drawString(String.format("%d RF", table.clientRequiredEnergy), x + 22, y + 32, textColour);
+			fontRendererObj.drawString(RotaryAux.formatPower(table.clientRequiredEnergy), x + 22, y + 32, textColour);
 			fontRendererObj.drawStringWithShadow(StringUtils.localize("gui.stored") + ":", x + 22, y + 44, subheaderColour);
-			fontRendererObj.drawString(String.format("%d RF", table.getEnergy()), x + 22, y + 56, textColour);
-			fontRendererObj.drawStringWithShadow(StringUtils.localize("gui.assemblyRate") + ":", x + 22, y + 68, subheaderColour);
-			fontRendererObj.drawString(String.format("%.1f RF/t", table.getRecentEnergyAverage() / 100.0f), x + 22, y + 80, textColour);
-
+			fontRendererObj.drawString(RotaryAux.formatPower(table.getEnergy()), x + 22, y + 56, textColour);
 		}
 
 		@Override
 		public String getTooltip() {
-			return String.format("%.1f RF/t", table.getRecentEnergyAverage() / 100.0f);
+			return RotaryAux.formatPower(table.getRecentEnergyAverage() / 100);
 		}
 	}
 

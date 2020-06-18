@@ -79,6 +79,7 @@ public class FlexibleRecipe<T> implements IFlexibleRecipe<T>, IFlexibleRecipeVie
 	}
 
 	public int energyCost = 0;
+	public int minEnergyToProcess = 0;
 	public long craftingTime = 0;
 	public String id;
 
@@ -93,11 +94,11 @@ public class FlexibleRecipe<T> implements IFlexibleRecipe<T>, IFlexibleRecipeVie
 
 	}
 
-	public FlexibleRecipe(String id, T output, int iEnergyCost, long craftingTime, Object... input) {
-		setContents(id, output, iEnergyCost, craftingTime, input);
+	public FlexibleRecipe(String id, T output, int iEnergyCost, int iMinEnergyToProcess, long craftingTime, Object... input) {
+		setContents(id, output, iEnergyCost, iMinEnergyToProcess, craftingTime, input);
 	}
 
-	public void setContents(String iid, Object iioutput, int iEnergyCost, long iCraftingTime, Object... input) {
+	public void setContents(String iid, Object iioutput, int iEnergyCost, int iMinEnergyToProcess, long iCraftingTime, Object... input) {
 		id = iid;
 
 		Object ioutput = null;
@@ -122,6 +123,7 @@ public class FlexibleRecipe<T> implements IFlexibleRecipe<T>, IFlexibleRecipeVie
 		}
 
 		energyCost = iEnergyCost;
+		minEnergyToProcess = iMinEnergyToProcess;
 		craftingTime = iCraftingTime;
 
 		for (Object ii : input) {
@@ -173,6 +175,7 @@ public class FlexibleRecipe<T> implements IFlexibleRecipe<T>, IFlexibleRecipeVie
 
 		result.recipe = this;
 		result.energyCost = energyCost;
+		result.minEnergyToProcess = minEnergyToProcess;
 		result.craftingTime = craftingTime;
 
 		for (ItemStack requirement : inputItems) {
@@ -314,6 +317,11 @@ public class FlexibleRecipe<T> implements IFlexibleRecipe<T>, IFlexibleRecipeVie
 	@Override
 	public int getEnergyCost() {
 		return energyCost;
+	}
+
+	@Override
+	public int getMinEnergyToProcess() {
+		return minEnergyToProcess;
 	}
 
 	@Override

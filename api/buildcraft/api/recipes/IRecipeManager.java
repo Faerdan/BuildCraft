@@ -23,9 +23,9 @@ public interface IRecipeManager<T> {
 	 * @param output
 	 *            resulting ItemStack
 	 */
-	void addRecipe(String id, int energyCost, T output, Object... input);
+	void addRecipe(String id, int energyCost, int minEnergyToProcess, T output, Object... input);
 
-	void addRecipe(String id, int energyCost, int craftingDelay, T output, Object... input);
+	void addRecipe(String id, int energyCost, int minEnergyToProcess, int craftingDelay, T output, Object... input);
 
 	void addRecipe(IFlexibleRecipe<T> recipe);
 	

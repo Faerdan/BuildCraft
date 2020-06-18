@@ -19,6 +19,7 @@ public class CraftingResult<T> {
 	public ArrayList<ItemStack> usedItems = new ArrayList<ItemStack>();
 	public ArrayList<FluidStack> usedFluids = new ArrayList<FluidStack>();
 	public int energyCost = 0;
+	public int minEnergyToProcess = 0;
 	public long craftingTime = 0;
 	public IFlexibleRecipe<T> recipe;
 }

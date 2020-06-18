@@ -198,6 +198,11 @@ public class TileStampingTable extends TileLaserTableBase implements IHasWork, I
 	}
 
 	@Override
+	public int getMinEnergyToProcess() {
+		return getRequiredEnergy() > 0 ? 16384 : 0;
+	}
+
+	@Override
 	public boolean hasWork() {
 		return getRequiredEnergy() > 0;
 	}

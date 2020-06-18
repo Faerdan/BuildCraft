@@ -259,6 +259,21 @@ public class TileAssemblyTable extends TileLaserTableBase implements IInventory,
 		}
 	}
 
+	@Override
+	public int getMinEnergyToProcess() {
+		if (currentRecipe != null) {
+			CraftingResult<ItemStack> result = currentRecipe.craft(this, true);
+
+			if (result != null) {
+				return result.minEnergyToProcess;
+			} else {
+				return 0;
+			}
+		} else {
+			return 0;
+		}
+	}
+
 	public void planOutput(IFlexibleRecipe<ItemStack> recipe) {
 		if (recipe != null && !isPlanned(recipe)) {
 			plannedOutput.add(recipe.getId());

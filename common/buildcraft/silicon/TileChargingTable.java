@@ -43,6 +43,11 @@ public class TileChargingTable extends TileLaserTableBase implements IHasWork {
 	}
 
 	@Override
+	public int getMinEnergyToProcess() {
+		return hasWork() ? 16384 : 0;
+	}
+
+	@Override
 	public boolean hasWork() {
 		return getRequiredEnergy() > 0;
 	}

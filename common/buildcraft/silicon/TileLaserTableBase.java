@@ -57,6 +57,8 @@ public abstract class TileLaserTableBase extends TileBuildCraft implements ILase
 
 	public abstract int getRequiredEnergy();
 
+	public abstract int getMinEnergyToProcess();
+
 	public int getProgressScaled(int ratio) {
 		if (clientRequiredEnergy == 0) {
 			return 0;
@@ -80,8 +82,11 @@ public abstract class TileLaserTableBase extends TileBuildCraft implements ILase
 
 	@Override
 	public void receiveLaserEnergy(int energy) {
-		this.energy += energy;
 		recentEnergyAverageUtil.push(energy);
+		if (recentEnergyAverageUtil.getAverage() >= getMinEnergyToProcess())
+		{
+			this.energy += energy;
+		}
 	}
 
 	@Override

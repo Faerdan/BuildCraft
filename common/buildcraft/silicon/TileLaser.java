@@ -11,7 +11,10 @@ package buildcraft.silicon;
 import java.util.LinkedList;
 import java.util.List;
 
+import Reika.DragonAPI.ModInteract.Power.ReikaRFHelper;
 import Reika.RotaryCraft.API.Power.ShaftPowerInputManager;
+import buildcraft.api.core.BCLog;
+import buildcraft.core.lib.utils.BitSetUtils;
 import io.netty.buffer.ByteBuf;
 
 import net.minecraft.nbt.NBTTagCompound;
@@ -39,6 +42,9 @@ public class TileLaser extends TileBuildCraft implements IHasWork, IControllable
 	private static final float LASER_OFFSET = 2.0F / 16.0F;
 	private static final short POWER_AVERAGING = 100;
 
+	private static final long MIN_POWER = 65536;
+	private static final long MAX_POWER = 262144;
+
 	public LaserData laser = new LaserData();
 
 	private final SafeTimeTracker laserTickTracker = new SafeTimeTracker(10);
@@ -50,10 +56,11 @@ public class TileLaser extends TileBuildCraft implements IHasWork, IControllable
 	private short powerAverage = 0;
 	private final short[] power = new short[POWER_AVERAGING];
 
+
 	public TileLaser() {
 		super();
 		//this.setBattery(new RFBattery(10000, 250, 0));
-		this.setBattery(new ShaftPowerInputManager(this, "laser", 1, 1, 131072));
+		this.setBattery(new ShaftPowerInputManager(this, "laser", 1, 1, MIN_POWER));
 	}
 
 	@Override
@@ -82,6 +89,7 @@ public class TileLaser extends TileBuildCraft implements IHasWork, IControllable
 
 		// If a gate disabled us, remove laser and do nothing.
 		if (mode == IControllable.Mode.Off) {
+			//BCLog.logger.warn("Laser mode is " + mode);
 			removeLaser();
 			return;
 		}
@@ -94,12 +102,14 @@ public class TileLaser extends TileBuildCraft implements IHasWork, IControllable
 		// If we still don't have a valid table or the existing has
 		// become invalid, we disable the laser and do nothing.
 		if (!isValidTable()) {
+			//BCLog.logger.warn("Laser !isValidTable");
 			removeLaser();
 			return;
 		}
 
 		// Disable the laser and do nothing if no energy is available.
 		if (!getBattery().isStagePowered(0)) {
+			//BCLog.logger.warn("Laser !isStagePowered");
 			removeLaser();
 			return;
 		}
@@ -109,28 +119,28 @@ public class TileLaser extends TileBuildCraft implements IHasWork, IControllable
 			// We have a table and can work, so we create a laser if
 			// necessary.
 			laser.isVisible = true;
+			//BCLog.logger.warn("Laser laser != null");
 
 			// We may update laser
 			if (canUpdateLaser()) {
+				//BCLog.logger.warn("Laser canUpdateLaser");
 				updateLaser();
 			}
 		}
 
 		// Consume power and transfer it to the table.
-		int localPower = (int)(40 * ((float)getBattery().getPower() / 262144F));//getBattery().useEnergy(0, getMaxPowerSent(), false);
+		int localPower = (int)Math.min(MAX_POWER, (float)getBattery().getPower());
 		laserTarget.receiveLaserEnergy(localPower);
+		//BCLog.logger.warn("Laser localPower " + localPower);
 
 		if (laser != null) {
+			//BCLog.logger.warn("Laser pushPower " + localPower);
 			pushPower(localPower);
 		}
 
 		onPowerSent(localPower);
 
 		sendNetworkUpdate();
-	}
-
-	protected int getMaxPowerSent() {
-		return 40;
 	}
 
 	protected void onPowerSent(int power) {
@@ -325,11 +335,11 @@ public class TileLaser extends TileBuildCraft implements IHasWork, IControllable
 	public ResourceLocation getTexture() {
 		double avg = powerAverage / POWER_AVERAGING;
 
-		if (avg <= 10.0) {
+		if (avg <= 65536) {
 			return EntityLaser.LASER_TEXTURES[0];
-		} else if (avg <= 20.0) {
+		} else if (avg <= 131072) {
 			return EntityLaser.LASER_TEXTURES[1];
-		} else if (avg <= 30.0) {
+		} else if (avg <= 196608) {
 			return EntityLaser.LASER_TEXTURES[2];
 		} else {
 			return EntityLaser.LASER_TEXTURES[3];

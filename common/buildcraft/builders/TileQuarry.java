@@ -109,7 +109,7 @@ public class TileQuarry extends TileAbstractBuilder implements IHasWork, ISidedI
 
 	public TileQuarry() {
 		box.kind = Kind.STRIPES;
-		this.setBattery(new ShaftPowerInputManager(this, "quarry", 1, 1, 1));
+		this.setBattery(new ShaftPowerInputManager(this, "quarry", 1, 1, 32768));
 		this.setStage(Stage.BUILDING);
 	}
 

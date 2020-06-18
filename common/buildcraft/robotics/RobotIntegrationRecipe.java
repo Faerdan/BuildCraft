@@ -11,6 +11,7 @@ package buildcraft.robotics;
 import java.util.ArrayList;
 import java.util.List;
 
+import Reika.DragonAPI.ModInteract.Power.ReikaRFHelper;
 import net.minecraft.item.ItemStack;
 
 import buildcraft.BuildCraftRobotics;
@@ -23,7 +24,7 @@ import buildcraft.core.recipes.IntegrationRecipeBC;
 
 public class RobotIntegrationRecipe extends IntegrationRecipeBC {
 	public RobotIntegrationRecipe() {
-		super(50000, 1);
+		super(Math.round(50000 * ReikaRFHelper.JoulePerRF), 1);
 	}
 
 	@Override

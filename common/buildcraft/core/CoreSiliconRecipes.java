@@ -1,5 +1,6 @@
 package buildcraft.core;
 
+import Reika.DragonAPI.ModInteract.Power.ReikaRFHelper;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 
@@ -18,7 +19,7 @@ public final class CoreSiliconRecipes {
 	public static void loadSiliconRecipes() {
 		// Lists
 		if (Utils.isRegistered(BuildCraftCore.listItem)) {
-			BuildcraftRecipeRegistry.assemblyTable.addRecipe("buildcraft:list", 20000, new ItemStack(BuildCraftCore.listItem, 1, 1),
+			BuildcraftRecipeRegistry.assemblyTable.addRecipe("buildcraft:list", Math.round(20000 * ReikaRFHelper.JoulePerRF), 65536, new ItemStack(BuildCraftCore.listItem, 1, 1),
 					"dyeGreen", "dustRedstone", new ItemStack(Items.paper, 8));
 		}
 	}

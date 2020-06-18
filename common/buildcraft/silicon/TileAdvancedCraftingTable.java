@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 
+import Reika.DragonAPI.ModInteract.Power.ReikaRFHelper;
 import com.google.common.collect.Lists;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -55,7 +56,7 @@ public class TileAdvancedCraftingTable extends TileLaserTableBase implements IIn
 	private static final int[] SLOTS = Utils.createSlotArray(0, 24);
 	private static final EnumSet<ForgeDirection> SEARCH_SIDES = EnumSet.of(ForgeDirection.DOWN, ForgeDirection.NORTH, ForgeDirection.SOUTH,
 			ForgeDirection.EAST, ForgeDirection.WEST);
-	private static final int REQUIRED_POWER = 5000;
+	private static final int REQUIRED_POWER = Math.round(5000 * ReikaRFHelper.JoulePerRF);
 	private final CraftingGrid craftingSlots;
 	private final InventoryMapper invInput;
 	private final InventoryMapper invOutput;
@@ -211,6 +212,11 @@ public class TileAdvancedCraftingTable extends TileLaserTableBase implements IIn
 	@Override
 	public int getRequiredEnergy() {
 		return craftResult.getStackInSlot(0) != null ? REQUIRED_POWER : 0;
+	}
+
+	@Override
+	public int getMinEnergyToProcess() {
+		return getRequiredEnergy() > 0 ? 16384 : 0;
 	}
 
 	@Override

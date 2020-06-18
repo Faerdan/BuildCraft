@@ -181,6 +181,11 @@ public class TileIntegrationTable extends TileLaserTableBase implements ISidedIn
 	}
 
 	@Override
+	public int getMinEnergyToProcess() {
+		return hasWork() ? 65536 : 0;
+	}
+
+	@Override
 	public boolean canCraft() {
 		return hasWork();
 	}

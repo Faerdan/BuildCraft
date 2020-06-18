@@ -146,6 +146,11 @@ public class TileProgrammingTable extends TileLaserTableBase implements IInvento
 		}
 	}
 
+	@Override
+	public int getMinEnergyToProcess() {
+		return hasWork() ? 65536 : 0;
+	}
+
 	public void findRecipe() {
 		String oldId = currentRecipeId;
 		currentRecipeId = null;

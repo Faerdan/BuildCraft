@@ -25,7 +25,7 @@ public interface IAssemblyRecipeManager {
 	 * @param output
 	 *            resulting ItemStack
 	 */
-	void addRecipe(String id, int energyCost, ItemStack output, Object... input);
+	void addRecipe(String id, int energyCost, int minEnergyToProcess, ItemStack output, Object... input);
 
 	void addRecipe(IFlexibleRecipe<ItemStack> recipe);
 	

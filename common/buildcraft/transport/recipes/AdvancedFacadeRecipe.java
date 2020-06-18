@@ -11,6 +11,7 @@ package buildcraft.transport.recipes;
 import java.util.ArrayList;
 import java.util.List;
 
+import Reika.DragonAPI.ModInteract.Power.ReikaRFHelper;
 import net.minecraft.item.ItemStack;
 
 import buildcraft.BuildCraftTransport;
@@ -24,7 +25,7 @@ import buildcraft.transport.ItemPipeWire;
 
 public class AdvancedFacadeRecipe extends IntegrationRecipeBC {
 	public AdvancedFacadeRecipe() {
-		super(25000, 2);
+		super(Math.round(25000 * ReikaRFHelper.JoulePerRF), 2);
 	}
 
 	@Override

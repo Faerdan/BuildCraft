@@ -8,6 +8,7 @@
  */
 package buildcraft;
 
+import Reika.DragonAPI.ModInteract.Power.ReikaRFHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDispenser;
 import net.minecraft.init.Blocks;
@@ -259,25 +260,25 @@ public class BuildCraftSilicon extends BuildCraftMod {
 				'P', Blocks.piston);
 
 		// CHIPSETS
-		BuildcraftRecipeRegistry.assemblyTable.addRecipe("buildcraft:redstoneChipset", Math.round(100000 * chipsetCostMultiplier), Chipset.RED.getStack(),
+		BuildcraftRecipeRegistry.assemblyTable.addRecipe("buildcraft:redstoneChipset", Math.round(100000 * chipsetCostMultiplier * ReikaRFHelper.JoulePerRF), 65536, Chipset.RED.getStack(),
 				"dustRedstone");
-		BuildcraftRecipeRegistry.assemblyTable.addRecipe("buildcraft:ironChipset", Math.round(200000 * chipsetCostMultiplier), Chipset.IRON.getStack(),
+		BuildcraftRecipeRegistry.assemblyTable.addRecipe("buildcraft:ironChipset", Math.round(200000 * chipsetCostMultiplier * ReikaRFHelper.JoulePerRF),131072, Chipset.IRON.getStack(),
 				"dustRedstone", "ingotIron");
-		BuildcraftRecipeRegistry.assemblyTable.addRecipe("buildcraft:goldChipset", Math.round(400000 * chipsetCostMultiplier), Chipset.GOLD.getStack(),
+		BuildcraftRecipeRegistry.assemblyTable.addRecipe("buildcraft:goldChipset", Math.round(400000 * chipsetCostMultiplier * ReikaRFHelper.JoulePerRF), 262144, Chipset.GOLD.getStack(),
 				"dustRedstone", "ingotGold");
-		BuildcraftRecipeRegistry.assemblyTable.addRecipe("buildcraft:diamondChipset", Math.round(800000 * chipsetCostMultiplier),
+		BuildcraftRecipeRegistry.assemblyTable.addRecipe("buildcraft:diamondChipset", Math.round(800000 * chipsetCostMultiplier * ReikaRFHelper.JoulePerRF), 524288,
 				Chipset.DIAMOND.getStack(), "dustRedstone", "gemDiamond");
-		BuildcraftRecipeRegistry.assemblyTable.addRecipe("buildcraft:emeraldChipset", Math.round(1200000 * chipsetCostMultiplier),
+		BuildcraftRecipeRegistry.assemblyTable.addRecipe("buildcraft:emeraldChipset", Math.round(1200000 * chipsetCostMultiplier * ReikaRFHelper.JoulePerRF), 786432,
 				Chipset.EMERALD.getStack(), "dustRedstone", "gemEmerald");
-		BuildcraftRecipeRegistry.assemblyTable.addRecipe("buildcraft:pulsatingChipset", Math.round(400000 * chipsetCostMultiplier),
+		BuildcraftRecipeRegistry.assemblyTable.addRecipe("buildcraft:pulsatingChipset", Math.round(400000 * chipsetCostMultiplier * ReikaRFHelper.JoulePerRF), 262144,
 				Chipset.PULSATING.getStack(2), "dustRedstone", Items.ender_pearl);
-		BuildcraftRecipeRegistry.assemblyTable.addRecipe("buildcraft:quartzChipset", Math.round(600000 * chipsetCostMultiplier), Chipset.QUARTZ.getStack(),
+		BuildcraftRecipeRegistry.assemblyTable.addRecipe("buildcraft:quartzChipset", Math.round(600000 * chipsetCostMultiplier * ReikaRFHelper.JoulePerRF), 393216, Chipset.QUARTZ.getStack(),
 				"dustRedstone", "gemQuartz");
-		BuildcraftRecipeRegistry.assemblyTable.addRecipe("buildcraft:compChipset", Math.round(600000 * chipsetCostMultiplier), Chipset.COMP.getStack(),
+		BuildcraftRecipeRegistry.assemblyTable.addRecipe("buildcraft:compChipset", Math.round(600000 * chipsetCostMultiplier * ReikaRFHelper.JoulePerRF), 393216, Chipset.COMP.getStack(),
 				"dustRedstone", Items.comparator);
 
 		// ROBOTS AND BOARDS
-		BuildcraftRecipeRegistry.assemblyTable.addRecipe("buildcraft:redstoneCrystal", 10000000, new ItemStack(
+		BuildcraftRecipeRegistry.assemblyTable.addRecipe("buildcraft:redstoneCrystal", Math.round(10000000 * chipsetCostMultiplier * ReikaRFHelper.JoulePerRF), 6553600, new ItemStack(
 				redstoneCrystal), new ItemStack(
 				Blocks.redstone_block));
 	}
